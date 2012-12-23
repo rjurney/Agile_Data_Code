@@ -47,39 +47,30 @@
          ]
       },
       {
-         "name":"froms",
-         "type":[
-            "null",
-            {
-               "type":"array",
-               "items":[
-                  "null",
-                  {
-                     "type":"record",
-                     "name":"from",
-                     "fields":[
-                        {
-                           "name":"real_name",
-                           "type":[
-                              "null",
-                              "string"
-                           ],
-                           "doc":""
-                        },
-                        {
-                           "name":"address",
-                           "type":[
-                              "null",
-                              "string"
-                           ],
-                           "doc":""
-                        }
-                     ]
-                  }
-               ]
-            }
-         ],
-         "doc":""
+         "name":"from",
+         "type":
+         {
+           "type":"record",
+           "name":"from",
+           "fields":[
+              {
+                 "name":"real_name",
+                 "type":[
+                    "null",
+                    "string"
+                 ],
+                 "doc":""
+              },
+              {
+                 "name":"address",
+                 "type":[
+                    "null",
+                    "string"
+                 ],
+                 "doc":""
+               }
+            ]
+         }
       },
       {
          "name":"tos",
