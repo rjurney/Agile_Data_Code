@@ -1,0 +1,38 @@
+#!/usr/bin/env python
+
+#
+# derived from example at http://www.harshj.com/2010/04/25/writing-and-reading-avro-data-files-using-python/
+#
+from avro import schema, datafile, io
+import pprint
+import sys
+import json
+
+field_id = None
+# Optional key to print
+if (len(sys.argv) > 2):
+  field_id = sys.argv[2]
+
+# Test reading avros
+rec_reader = io.DatumReader()
+
+# Create a 'data file' (avro file) reader
+df_reader = datafile.DataFileReader(
+  open(sys.argv[1]),
+  rec_reader
+)
+
+# Read all records stored inside
+pp = pprint.PrettyPrinter()
+i = 0
+for record in df_reader:
+  if i > 20:
+    break
+  i += 1
+  if field_id:
+    pp.pprint(record[field_id])
+  else:
+    pp.pprint(record)
+
+obj = json.loads(df_reader.meta['avro.schema'])
+print "\nAvro Schema: " + json.dumps(obj)
