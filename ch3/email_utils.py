@@ -75,10 +75,14 @@ class EmailUtils(object):
     print charset
     try:
       if charset:
-        subject = subject.decode(charset)#.encode('utf-8')
-        body = body.decode(charset)#.encode('utf-8')
+        subject = subject.decode(charset)
+        body = body.decode(charset)
       else:
         return {}, charset
+    except:
+      return {}, charset
+    try:
+      from_value = self.parse_addrs(msg['From'])[0]
     except:
       return {}, charset
     avro_parts = dict({
@@ -88,7 +92,7 @@ class EmailUtils(object):
       'subject': subject,
       'date': self.parse_date(msg['Date']),
       'body': body,
-      'from': self.parse_addrs(msg['From'])[0],
+      'from': from_value,
       'tos': self.parse_addrs(msg['To']),
       'ccs': self.parse_addrs(msg['Cc']),
       'bccs': self.parse_addrs(msg['Bcc']),

@@ -140,7 +140,7 @@ class GmailSlurper(object):
           stat, c = self.reset()
           sys.stderr.write("IMAP RESET: " + str(stat) + " " + str(c) + "\n")
         else:
-          sys.stderr.write("ERROR IN PARSING EMAIL, SKIPPED ONE")
+          sys.stderr.write("ERROR IN PARSING EMAIL, SKIPPED ONE\n")
           continue
   
   def reset(self):
