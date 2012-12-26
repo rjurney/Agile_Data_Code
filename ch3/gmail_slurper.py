@@ -30,9 +30,12 @@ class GmailSlurper(object):
       imap.shutdown()
     except:
       pass
-    self.imap = imaplib.IMAP4_SSL('imap.gmail.com', 993)
-    self.imap.login(username, password)
-    self.imap.is_readonly = True
+    try:
+      self.imap = imaplib.IMAP4_SSL('imap.gmail.com', 993)
+      self.imap.login(username, password)
+      self.imap.is_readonly = True
+    except:
+      pass
   
   # part_id will be helpful one we're splitting files among multiple slurpers
   def init_avro(self, output_path, part_id, schema_path):
@@ -145,7 +148,12 @@ class GmailSlurper(object):
   
   def reset(self):
     self.init_imap(self.username, self.password)
-    status, count = self.init_folder(self.imap_folder)
+    try:
+      status, count = self.init_folder(self.imap_folder)
+    except:
+      self.reset()
+      status = 'ERROR'
+      count = 0
     return status, count
   
   class TimeoutException(Exception): 
