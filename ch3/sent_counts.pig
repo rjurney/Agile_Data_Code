@@ -21,7 +21,10 @@ lowers = FOREACH addresses GENERATE LOWER(from) AS from, LOWER(to) AS to;
 /* GROUP BY each from/to pair into a bag (array), then count the bag's contents ($1 means the 2nd field) to get a total.
    Same as SQL: SELECT from, to, COUNT(*) FROM lowers GROUP BY (from, to);
    Note: COUNT_STAR differs from COUNT in that it counts nulls. */
-sent_counts = FOREACH (GROUP lowers BY (from, to)) GENERATE FLATTEN(group) AS (from, to), COUNT_STAR($1) AS total;
+by_from_to = GROUP lowers BY (from, to);
+sent_counts = FOREACH by_from_to GENERATE FLATTEN(group) AS (from, to), COUNT_STAR(lowers) AS total;
+
+/* Sort the data, highest sent count first */
 sent_counts = ORDER sent_counts BY total DESC;
 
-STORE sent_counts INTO '/tmp/sent_counts';
+STORE sent_counts INTO '/tmp/sent_counts.txt';
