@@ -158,4 +158,4 @@ class GmailSlurper(object):
   
   class TimeoutException(Exception): 
     """Indicates an operation timed out."""
-    self.reset()
+    pass
