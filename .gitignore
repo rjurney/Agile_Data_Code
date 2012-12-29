@@ -1,2 +1,4 @@
 *.txt
 *.pyc
+venv
+pyelasticsearch
