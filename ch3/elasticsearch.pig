@@ -19,7 +19,7 @@ sh curl -XDELETE 'http://localhost:9200/inbox/emails'
 
 /* Load Avros, and store as JSON */
 emails = LOAD '/tmp/test_mbox_big' USING AvroStorage();
-STORE emails INTO '/tmp/inbox_json' USING JsonStorage(); 
+STORE emails INTO '/tmp/inbox_json' USING JsonStorage();
 
 /* Now load the JSON as a single chararray field, and index it into ElasticSearch with Wonderdog from InfoChimps */
 email_json = LOAD '/tmp/inbox_json' AS (email:chararray);

@@ -158,4 +158,5 @@ class GmailSlurper(object):
   
   class TimeoutException(Exception): 
     """Indicates an operation timed out."""
+    sys.stderr.write("Timeout exception occurred!\n")
     pass
