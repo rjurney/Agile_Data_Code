@@ -10,7 +10,8 @@ Chapter 2
 Chapter 3
 =========
 
-# Setup your Python Virtual Environment
+Setup your Python Virtual Environment
+-------------------------------------
 
 ```
 # From project root
@@ -20,7 +21,8 @@ virtualenv -p `which python2.7` venv --distribute
 source venv/bin/activate
 ```
 
-# Download your Gmail Inbox!
+Download your Gmail Inbox!
+--------------------------
 
 ```
 # From ch3
