@@ -1,4 +1,4 @@
-Agile Data: Chapter 3
+Agile Data - Chapter 3
 =====================
 
 Setup your Python Virtual Environment

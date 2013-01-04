@@ -2,7 +2,6 @@ Agile Data Code Examples
 ========================
 
 
-
 Chapter 2: Data
 ===============
 
@@ -33,6 +32,6 @@ cd gmail
 ./gmail.py -m automatic -u me@gmail.com -p 'my_password_' -s ./email.avro.schema -f '[Gmail]/All Mail' -o /tmp/test_mbox 2>&1 &
 ```
 
-Chapter 6
-=========
+Chapter 7: Collecting and Displaying Records
+============================================
 
