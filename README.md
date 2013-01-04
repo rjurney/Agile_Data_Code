@@ -3,12 +3,12 @@ Agile Data Code Examples
 
 
 
-Chapter 2
-=========
+Chapter 2: Data
+===============
 
 
-Chapter 3
-=========
+Chapter 3: Agile Tools
+======================
 
 Setup your Python Virtual Environment
 -------------------------------------
@@ -19,6 +19,7 @@ Setup your Python Virtual Environment
 # Setup python virtualenv
 virtualenv -p `which python2.7` venv --distribute
 source venv/bin/activate
+pip install -r requirements.txt
 ```
 
 Download your Gmail Inbox!
@@ -34,3 +35,4 @@ cd gmail
 
 Chapter 6
 =========
+

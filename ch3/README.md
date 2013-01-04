@@ -10,6 +10,7 @@ Setup your Python Virtual Environment
 # Setup python virtualenv
 virtualenv -p `which python2.7` venv --distribute
 source venv/bin/activate
+pip install -r requirements.txt
 ```
 
 Download your Gmail Inbox!
