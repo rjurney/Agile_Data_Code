@@ -1,5 +1,5 @@
-Agile Data - Chapter 3
-=====================
+Agile Data - Chapter 3: Collecting and Displaying Records
+=========================================================
 
 Setup your Python Virtual Environment
 -------------------------------------
