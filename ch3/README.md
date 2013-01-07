@@ -197,6 +197,8 @@ find .|grep jar
 
 You'll need to replace the paths in the script at 'ch3/pig/elasticsearch.pig' to match your local 'elasticsearch' and 'wonderdog' install paths. Pay particular attention to the parameters given to 'com.infochimps.elasticsearch.pig.ElasticSearchStorage()', which is the path to 'elasticsearch.yml' (ElasticSearch's config file), and the path to ElasticSearch's 'plugins' directory. You must manually specify both.
 
+Note: do NOT use an underscore '_' in an elasticsearch index name. It will fail badly and you won't know why.
+
 ```
 /* Elasticsearch's own jars */
 REGISTER /me/Software/elasticsearch-0.20.2/lib/*.jar
@@ -208,7 +210,7 @@ REGISTER /me/Software/wonderdog/target/wonderdog-1.0-SNAPSHOT.jar
 
 /* Now load the JSON as a single chararray field, and index it into ElasticSearch with Wonderdog from InfoChimps */
 email_json = LOAD '/tmp/inbox_json' AS (record:chararray);
-STORE email_json INTO 'es://inbox/sent_counts?json=true&size=1000' USING com.infochimps.elasticsearch.pig.ElasticSearchStorage(
+STORE email_json INTO 'es://inbox/sentcounts?json=true&size=1000' USING com.infochimps.elasticsearch.pig.ElasticSearchStorage(
   '/me/Software/elasticsearch-0.20.2/config/elasticsearch.yml', 
   '/me/Software/elasticsearch-0.20.2/plugins');
 ```
@@ -228,7 +230,7 @@ Now run 'ch3/python/elasticsearch.py':
 ```
 import pyelasticsearch
 elastic = pyelasticsearch.ElasticSearch('http://localhost:9200/inbox')
-results = elastic.search("from:hadoop", index="sent_counts")
+results = elastic.search("from:hadoop", index="sentcounts")
 print results
 ```
 

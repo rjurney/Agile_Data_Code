@@ -23,9 +23,9 @@ STORE sent_counts INTO '/tmp/sent_count_json' USING JsonStorage();
 
 /* Now load the JSON as a single chararray field, and index it into ElasticSearch with Wonderdog from InfoChimps */
 sent_count_json = LOAD '/tmp/sent_count_json' AS (sent_counts:chararray);
-STORE sent_count_json INTO 'es://inbox/sent_counts?json=true&size=1000' USING com.infochimps.elasticsearch.pig.ElasticSearchStorage(
+STORE sent_count_json INTO 'es://inbox/sentcounts?json=true&size=1000' USING com.infochimps.elasticsearch.pig.ElasticSearchStorage(
   '/me/Software/elasticsearch-0.20.2/config/elasticsearch.yml', 
   '/me/Software/elasticsearch-0.20.2/plugins');
 
 /* Search for Hadoop to make sure we get a hit in our sent_count index */
-sh curl -XGET 'http://localhost:9200/inbox/sent_counts/_search?q=russ&pretty=true&size=1'
+sh curl -XGET 'http://localhost:9200/inbox/sentcounts/_search?q=russ&pretty=true&size=1'
