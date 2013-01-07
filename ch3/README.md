@@ -130,3 +130,69 @@ sent_counts = LOAD '/tmp/sent_counts.txt' AS (from:chararray, to:chararray, tota
 STORE sent_counts INTO 'mongodb://localhost/agile_data.sent_counts' USING com.mongodb.hadoop.pig.MongoStorage();
 ```
 
+# Connect to MongoDB from Python
+
+To install all python dependencies, execute:
+
+```
+pip install -r requirements.txt
+```
+
+Run 'ch3/python/mongo.py'
+
+```
+import pymongo
+import json
+
+conn = pymongo.Connection() # defaults to localhost
+db = conn.agile_data
+results = db['sent_counts'].find()
+for i in range(0, results.count()): # Loop and print all results
+  print results[i]
+```
+
+```
+python ch3/python/mongo.py
+
+{u'total': 22994L, u'to': u'pig-dev@hadoop.apache.org', u'_id': ObjectId('50ea5e0a30040697fb0f0710'), u'from': u'jira@apache.org'}
+{u'total': 1933L, u'to': u'user@hbase.apache.org', u'_id': ObjectId('50ea5e0a30040697fb0f0714'), u'from': u'stack@duboce.net'}
+{u'total': 1410L, u'to': u'user@hbase.apache.org', u'_id': ObjectId('50ea5e0a30040697fb0f0721'), u'from': u'jdcryans@apache.org'}
+{u'total': 870L, u'to': u'russell.jurney@gmail.com', u'_id': ObjectId('50ea5e0a30040697fb0f0725'), u'from': u'jira@apache.org'}
+{u'total': 685L, u'to': u'common-user@hadoop.apache.org', u'_id': ObjectId('50ea5e0a30040697fb0f0731'), u'from': u'harsh@cloudera.com'}
+{u'total': 684L, u'to': u'user@pig.apache.org', u'_id': ObjectId('50ea5e0a30040697fb0f0732'), u'from': u'dvryaboy@gmail.com'}
+{u'total': 593L, u'to': u'user@hbase.apache.org', u'_id': ObjectId('50ea5e0a30040697fb0f073c'), u'from': u'yuzhihong@gmail.com'}
+{u'total': 581L, u'to': u'hbase-user@hadoop.apache.org', u'_id': ObjectId('50ea5e0a30040697fb0f073d'), u'from': u'stack@duboce.net'}
+{u'total': 435L, u'to': u'user@hbase.apache.org', u'_id': ObjectId('50ea5e0a30040697fb0f0751'), u'from': u'michael_segel@hotmail.com'}
+{u'total': 404L, u'to': u'user@hbase.apache.org', u'_id': ObjectId('50ea5e0a30040697fb0f0755'), u'from': u'doug.meil@explorysmedical.com'}
+{u'total': 387L, u'to': u'hbase-user@hadoop.apache.org', u'_id': ObjectId('50ea5e0a30040697fb0f075a'), u'from': u'jdcryans@apache.org'}
+...
+```
+
+# Install ElasticSearch
+
+ElasticSearch is an easy to use search engine built on top of Lucene.
+
+```
+wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.20.2.tar.gz
+tar -xvzf elasticsearch-0.20.2.tar.gz
+cd elasticsearch-0.20.2
+mkdir plugins
+bin/elasticsearch -f
+```
+
+# Install Wonderdog
+
+Wonderdog connects Pig to ElasticSearch
+
+```
+git clone https://github.com/infochimps-labs/wonderdog.git
+cd wonderdog
+mvn install
+find .|grep jar
+
+./target/wonderdog-1.0-SNAPSHOT.jar
+```
+
+# Instsall PyElasticsearch
+
+We use 'pyelasticsearch' to connect to 
