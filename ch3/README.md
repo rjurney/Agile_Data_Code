@@ -237,7 +237,30 @@ print results
 ```
 python ch3/python/elasticsearch.py
 
-
+{
+    u'hits': {
+        u'hits': [
+            {
+                u'_score': 1.0774149,
+                u'_type': u'sentcounts',
+                u'_id': u'FFGklMbtTdehUxwezlLS-g',
+                u'_source': {
+                    u'to': u'hadoop-studio-users@lists.sourceforge.net',
+                    u'total': 196,
+                    u'from': u'hadoop-studio-users-request@lists.sourceforge.net'
+                },
+                u'_index': u'inbox'
+            },
+            {
+                u'_score': 1.0725133,
+                u'_type': u'sentcounts',
+                u'_id': u'rjxnV1zST62XoP6IQV25SA',
+                u'_source': {
+                    u'to': u'user@hadoop.apache.org',
+                    u'total': 2,
+                    u'from': u'hadoop@gmx.com'
+                },
+            ...
 ```
 
 # Echo Service in Flask
