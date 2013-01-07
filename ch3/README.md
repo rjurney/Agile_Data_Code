@@ -25,10 +25,14 @@ cd gmail
 ```
 
 # Download Apache Pig
+```
 wget http://www.trieuvan.com/apache/pig/pig-0.10.1/pig-0.10.1.tar.gz
 tar -xvzf pig-0.10.1.tar.gz
 cd pig-0.10.1
 ant
+```
+
+Now you can run 'bin/pig'!
 
 # Edit and run sent_counts.pig
 
@@ -54,9 +58,58 @@ stack@duboce.net        hbase-user@hadoop.apache.org    581
 michael_segel@hotmail.com       user@hbase.apache.org   435
 doug.meil@explorysmedical.com   user@hbase.apache.org   404
 jdcryans@apache.org     hbase-user@hadoop.apache.org    387
+...
 ```
 
 # Install MongoDB
 
-Information on installing MongoDB on your platform are available at http://docs.mongodb.org/manual/installation/ and you can download MongoDB here: http://www.mongodb.org/downloads
+Information on installing MongoDB on your platform are available at http://docs.mongodb.org/manual/installation/ and you can download MongoDB here: http://www.mongodb.org/downloads Be sure to download the 64-bit version of MongoDB.
 
+For example, for Mac OS X:
+```
+wget http://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.2.2.tgz
+tar -xvzf mongodb-osx-x86_64-2.2.2.tgz
+cd mongodb-osx-x86_64-2.2.2
+sudo mkdir -p /data/db/
+sudo chown `id -u` /data/db
+```
+
+Now you must run MongoDB:
+
+```
+bin/mongod 2>&1 &
+```
+
+To connect to MongoDB:
+
+```
+bin/mongo agile_data
+```
+
+# Install MongoDB's Java Driver
+
+The MongoDB Java driver is available at https://github.com/mongodb/mongo-java-driver/downloads Download it, and place it at the base of your MongoDB install directory.
+
+```
+cd <my_mongodb_install_path>
+wget https://github.com/downloads/mongodb/mongo-java-driver/mongo-2.10.1.jar
+```
+
+# Install mongo-hadoop
+
+The 'mongo-hadoop' project connects MongoDB and Hadoop. We'll be using it to connect MongoDB and Pig. To get it, you must use git:
+
+```
+git clone https://github.com/mongodb/mongo-hadoop.git
+cd mongo-hadoop
+./sbt update
+./sbt package
+find .|grep jar
+
+./.lib/0.12.0-RC1/sbt-launch.jar
+./core/target/mongo-hadoop-core-1.1.0-SNAPSHOT.jar
+./examples/pigtutorial/lib/pigtutorial.jar
+./flume/target/mongo-flume-1.1.0-SNAPSHOT.jar
+./pig/target/mongo-hadoop-pig-1.1.0-SNAPSHOT.jar
+./target/mongo-hadoop-1.1.0-SNAPSHOT.jar
+```
