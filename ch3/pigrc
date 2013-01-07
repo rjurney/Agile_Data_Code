@@ -1,0 +1,16 @@
+/* Setup for Piggybank */
+%default PIGGYBANK_LIB '/me/Software/pig/contrib/piggybank/java'
+REGISTER $PIBBYBANK_LIB/piggybank.jar
+
+/* Setup for Avro */
+%default PIG_LIB '/me/Software/pig/build/ivy/lib/Pig';
+REGISTER $PIG_LIB/avro-1.5.3.jar
+REGISTER $PIG_LIB/json-simple-1.1.jar
+DEFINE AvroStorage org.apache.pig.piggybank.storage.avro.AvroStorage();
+
+/* Setup for MongoDB */
+$default MONGO_LIB '/me/Software/mongo-hadoop/'
+REGISTER $MONGO_LIB/mongo-2.10.1.jar
+REGISTER $MONGO_LIB/core/target/mongo-hadoop-core-1.1.0-SNAPSHOT.jar
+REGISTER $MONGO_LIB/pig/target/mongo-hadoop-pig-1.1.0-SNAPSHOT.jar
+DEFINE MongoStorage com.mongodb.hadoop.pig.MongoStorage();
