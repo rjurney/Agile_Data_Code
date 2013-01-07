@@ -23,9 +23,9 @@ STORE emails INTO '/tmp/inbox_json' USING JsonStorage();
 
 /* Now load the JSON as a single chararray field, and index it into ElasticSearch with Wonderdog from InfoChimps */
 email_json = LOAD '/tmp/inbox_json' AS (email:chararray);
-STORE email_json INTO 'es://inbox/sent_counts?json=true&size=1000' USING com.infochimps.elasticsearch.pig.ElasticSearchStorage(
+STORE email_json INTO 'es://inbox/emails?json=true&size=1000' USING com.infochimps.elasticsearch.pig.ElasticSearchStorage(
   '/me/Software/elasticsearch-0.20.2/config/elasticsearch.yml', 
   '/me/Software/elasticsearch-0.20.2/plugins');
 
 /* Search for Hadoop to make sure we get a hit in our email index */
-sh curl -XGET 'http://localhost:9200/inbox/sent_counts/_search?q=hadoop&pretty=true&size=1'
+sh curl -XGET 'http://localhost:9200/inbox/sent_counts/_search?q=gmail&pretty=true&size=1'

@@ -224,7 +224,7 @@ STORE email_json INTO 'es://inbox/emails?json=true&size=1000' USING com.infochim
 sh curl -XGET 'http://localhost:9200/inbox/emails/_search?q=hadoop&pretty=true&size=1'
 ```
 
-
+To run it: 'pig -l /tmp -x local -v -w ch3/pig/elasticsearch.pig '
 
 # Instsall PyElasticsearch
 
