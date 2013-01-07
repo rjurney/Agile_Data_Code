@@ -28,4 +28,4 @@ STORE email_json INTO 'es://inbox/sent_counts?json=true&size=1000' USING com.inf
   '/me/Software/elasticsearch-0.20.2/plugins');
 
 /* Search for Hadoop to make sure we get a hit in our email index */
-sh curl -XGET 'http://localhost:9200/inbox/sent_counts/_search?q=hadoop&pretty=true&size=1'
+sh curl -XGET 'http://localhost:9200/inbox/sent_counts/_search?q=russ&pretty=true&size=1'

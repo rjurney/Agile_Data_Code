@@ -215,7 +215,7 @@ STORE email_json INTO 'es://inbox/sent_counts?json=true&size=1000' USING com.inf
 
 To run it: 'pig -l /tmp -x local -v -w ch3/pig/elasticsearch.pig '
 
-# Instsall PyElasticsearch
+# Connect to ElasticSearch from Python with PyElasticsearch
 
 We use 'pyelasticsearch' to connect to ElasticSearch from Python. To install all python dependencies, execute:
 
@@ -223,8 +223,20 @@ We use 'pyelasticsearch' to connect to ElasticSearch from Python. To install all
 pip install -r requirements.txt
 ```
 
-Now run 'ch3/python/elasticsearch':
+Now run 'ch3/python/elasticsearch.py':
 
+```
+import pyelasticsearch
+elastic = pyelasticsearch.ElasticSearch('http://localhost:9200/inbox')
+results = elastic.search("from:hadoop", index="sent_counts")
+print results
 ```
 
 ```
+python ch3/python/elasticsearch.py
+
+
+```
+
+# Display sent_counts in Flask
+
