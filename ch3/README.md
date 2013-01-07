@@ -238,5 +238,52 @@ python ch3/python/elasticsearch.py
 
 ```
 
+# Echo Service in Flask
+
+Run 'ch3/python/flask_echo.py' to activate an echo service.
+
+```
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/<input>")
+def hello(input):
+  return input
+
+if __name__ == "__main__":
+  app.run(debug=True)
+```
+
+An echo service is quite simple:
+
+```
+curl 'http://localhost:5000/Hello%20World'
+Hello World
+```
+
 # Display sent_counts in Flask
 
+Run 'ch3/python/flask_mongo.py' to activate flask with MongoDB.
+
+```
+# Setup Mongo
+conn = pymongo.Connection() # defaults to localhost
+db = conn.agile_data
+sent_counts = db['sent_counts']
+
+# Fetch from/to totals, given a pair of email addresses
+@app.route("/sent_counts/<from_address>/<to_address>")
+def sent_count(from_address, to_address):
+  sent_count = sent_counts.find_one( {'from': from_address, 'to': to_address} )
+  return json.dumps( {'from': sent_count['from'], 'to': sent_count['to'], 'total': sent_count['total']} )
+```
+
+Fetch the json output like so (modify to fit your inbox):
+
+```
+curl http://localhost:5000/sent_counts/russell.jurney@gmail.com/****.jurney@gmail.com
+{"to": "****.jurney@gmail.com", "total": 552, "from": "russell.jurney@gmail.com"}```
+
+# Conclusion
+
+Thats it - localhost setup is done!
