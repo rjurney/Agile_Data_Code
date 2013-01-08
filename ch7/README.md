@@ -1,7 +1,7 @@
 Agile Data - Chapter 7: Collecting and Displaying Atomic Records
 ===============================================================
 
-Setup Python Virtual Environment
+# Setup Python Virtual Environment #
 --------------------------------
 
 ```

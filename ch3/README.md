@@ -1,8 +1,7 @@
 Agile Data - Chapter 3: Collecting and Displaying Records
 =========================================================
 
-Setup your Python Virtual Environment
--------------------------------------
+# Setup your Python Virtual Environment #
 
 ```
 # From project root
@@ -13,8 +12,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Download your Gmail Inbox!
---------------------------
+# Download your Gmail Inbox! #
 
 ```
 # From ch3
@@ -34,7 +32,7 @@ ant
 
 Now you can run 'bin/pig'!
 
-# Edit and run sent_counts.pig
+# Edit and run sent_counts.pig #
 
 Open 'ch3/pig/sent_counts.pig' and edit the path to match where you stored your emails as Avros:
 
@@ -61,7 +59,7 @@ jdcryans@apache.org     hbase-user@hadoop.apache.org    387
 ...
 ```
 
-# Install MongoDB
+# Install MongoDB #
 
 Information on installing MongoDB on your platform are available at http://docs.mongodb.org/manual/installation/ and you can download MongoDB here: http://www.mongodb.org/downloads Be sure to download the 64-bit version of MongoDB.
 
@@ -86,7 +84,7 @@ To connect to MongoDB:
 bin/mongo agile_data
 ```
 
-# Install MongoDB's Java Driver
+# Install MongoDB's Java Driver #
 
 The MongoDB Java driver is available at https://github.com/mongodb/mongo-java-driver/downloads Download it, and place it at the base of your MongoDB install directory.
 
@@ -95,7 +93,7 @@ cd <my_mongodb_install_path>
 wget https://github.com/downloads/mongodb/mongo-java-driver/mongo-2.10.1.jar
 ```
 
-# Install mongo-hadoop
+# Install mongo-hadoop #
 
 The 'mongo-hadoop' project connects MongoDB and Hadoop. We'll be using it to connect MongoDB and Pig. To get it, you must use git:
 
@@ -114,7 +112,7 @@ find .|grep jar
 ./target/mongo-hadoop-1.1.0-SNAPSHOT.jar
 ```
 
-# Push data from Pig to MongoDB
+# Push data from Pig to MongoDB #
 
 Fix the paths in 'ch3/pig/mongo.pig' to point at your install paths and run it, to store the email sent counts to MongoDB.
 
@@ -130,7 +128,7 @@ sent_counts = LOAD '/tmp/sent_counts.txt' AS (from:chararray, to:chararray, tota
 STORE sent_counts INTO 'mongodb://localhost/agile_data.sent_counts' USING com.mongodb.hadoop.pig.MongoStorage();
 ```
 
-# Connect to MongoDB from Python
+# Connect to MongoDB from Python #
 
 To install all python dependencies, execute:
 
@@ -168,7 +166,7 @@ python ch3/python/mongo.py
 ...
 ```
 
-# Install ElasticSearch
+# Install ElasticSearch #
 
 ElasticSearch is an easy to use search engine built on top of Lucene.
 
@@ -180,7 +178,7 @@ mkdir plugins
 bin/elasticsearch -f
 ```
 
-# Install Wonderdog
+# Install Wonderdog #
 
 Wonderdog connects Pig to ElasticSearch
 
@@ -193,7 +191,7 @@ find .|grep jar
 ./target/wonderdog-1.0-SNAPSHOT.jar
 ```
 
-# Push sent_counts from Pig to ElasticSearch
+# Push sent_counts from Pig to ElasticSearch #
 
 You'll need to replace the paths in the script at 'ch3/pig/elasticsearch.pig' to match your local 'elasticsearch' and 'wonderdog' install paths. Pay particular attention to the parameters given to 'com.infochimps.elasticsearch.pig.ElasticSearchStorage()', which is the path to 'elasticsearch.yml' (ElasticSearch's config file), and the path to ElasticSearch's 'plugins' directory. You must manually specify both.
 
@@ -217,7 +215,7 @@ STORE email_json INTO 'es://inbox/sentcounts?json=true&size=1000' USING com.info
 
 To run it: 'pig -l /tmp -x local -v -w ch3/pig/elasticsearch.pig '
 
-# Connect to ElasticSearch from Python with PyElasticsearch
+# Connect to ElasticSearch from Python with PyElasticsearch #
 
 We use 'pyelasticsearch' to connect to ElasticSearch from Python. To install all python dependencies, execute:
 
