@@ -23,7 +23,7 @@ def sent_counts(message_id):
 @app.route("/emails/<int:offset1>/<int:offset2>")
 def list_emails(offset1 = 0, offset2 = 20):
   email_list = emails.find()[offset1:offset2]
-  data = {'emails': email_list, 'nav_offsets': nav_offsets, 'nav_path': '/emails/'}
+  data = {'emails': email_list,  'nav_path': '/emails/'} #'nav_offsets': nav_offsets,
   return render_template('partials/emails.html', data=data)
 
 if __name__ == "__main__":

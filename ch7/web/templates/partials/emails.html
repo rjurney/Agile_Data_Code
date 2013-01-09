@@ -23,23 +23,29 @@
 <!-- Parse a pig tuple being passed through in string format -->
 
 {% block content -%}
-  <table class="table table-striped table-bordered table-condensed" style="table-layout: fixed; width: 900px;">
-    <thead>
-      <th style="width: 25%">From</th>
-      <th style="width: 60%">Subject</th>
-      <th style="width: 15%">Date</th>
-    </thead>
-    <tbody>
-      {% for email in data['emails'] %}
-      <tr>
-        <td>{{ display_emails(email['from']) }}</td>
-        <td>{{ common.display_link(email['message_id'], '/email', email['subject'])|safe }}</td>
-        <td>{{ email['date'] }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% if data.has_key('nav_offsets') and data.has_key('nav_path') -%}
-    {{ common.display_nav(data['nav_offsets'], data['nav_path'], data['query'])|safe }}
-  {% endif -%}
+  <div class="page-header">
+    <h1>Analytic Inbox</h1>
+  </div>
+  <p class="lead">Emails</p>
+  <div>
+    <table class="table table-striped table-bordered table-condensed" style="table-layout: fixed; width: 900px;">
+      <thead>
+        <th style="width: 25%">From</th>
+        <th style="width: 60%">Subject</th>
+        <th style="width: 15%">Date</th>
+      </thead>
+      <tbody>
+        {% for email in data['emails'] %}
+        <tr>
+          <td>{{ display_emails(email['from']) }}</td>
+          <td>{{ common.display_link(email['message_id'], '/email', email['subject'])|safe }}</td>
+          <td>{{ email['date'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if data.has_key('nav_offsets') and data.has_key('nav_path') -%}
+      {{ common.display_nav(data['nav_offsets'], data['nav_path'], data['query'])|safe }}
+    {% endif -%}
+  </div>
 {% endblock -%}
