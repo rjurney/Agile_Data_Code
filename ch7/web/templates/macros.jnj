@@ -1,6 +1,6 @@
 <!-- Display a link as a value -->
 {% macro display_link(value, base_path, display) -%}
-  <div class="span" style="display: inline-block;"><a href="{{ base_path }}/{{ value }}">{{ display|truncate(length=80, killwords=False, end='...') }}</a></div>
+  <div class="span"><a href="{{ base_path }}/{{ value }}">{{ display|truncate(length=80, killwords=False, end='...') }}</a></div>
 {% endmacro -%}
 
 <!-- Display a pair of navigation links for previous/next page in the email list -->

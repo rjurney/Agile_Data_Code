@@ -54,13 +54,13 @@
 
 <!-- Link to another message ID -->
 {% macro display_in_reply_to(key, name) %}
-  {% if email[key] %}
+  {% if email[key] != 'None' -%}
     <div class="row">
       {{ display_label(name) }}
       {{ common.display_link(email[key], '/email', email[key])|safe }}
     </div>
-  {% endif %}
-{% endmacro %}
+  {% endif -%}
+{% endmacro -%}
 
 <!-- Convert the carriage returns in a message body to HTML endlines -->
 {% macro convert_body(body) -%}
