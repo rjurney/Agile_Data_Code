@@ -83,10 +83,8 @@
   <div class="page-header">
     <h1>Analytic Inbox</h1>
   </div>
-  <p class="lead">Email</p>
+  <p class="lead">Email ID: {{email['message_id']}}</p>
   <div>
-  {{ display_field('message_id', 'ID') }}
-  
   {{ display_email_addresses('From', email['from']) }}
   {{ display_email_addresses('To', email['tos']) }}
   {{ display_email_addresses('Cc', email['ccs']) }}
