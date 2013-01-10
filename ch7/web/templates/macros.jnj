@@ -42,3 +42,19 @@
     {{ email_record['address'] }}
   {% endif -%}
 {% endmacro -%}
+
+<!-- Display a list of emails across a span, as in to/from/cc/bcc/reply_to -->
+{% macro display_email_addresses(name, emails) -%}
+  <div class="row">
+  {% if emails -%}
+    {{ display_label(name) }}
+    {% if emails is mapping -%}
+      {{ display_email_address(emails) }}
+    {% elif emails is iterable %}
+      {% for e in emails -%}
+        {{ display_email_address(e) }}
+      {% endfor -%}
+    {% endif -%}
+  {% endif -%}
+  </div>
+{% endmacro -%}

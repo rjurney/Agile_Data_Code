@@ -4,22 +4,6 @@
 <!-- Include our common macro set -->
 {% import "macros.jnj" as common %}
 
-<!-- Display a list of emails across a span, as in to/from/cc/bcc/reply_to -->
-{% macro display_email_addresses(name, emails) -%}
-  <div class="row">
-  {% if emails -%}
-    {{ display_label(name) }}
-    {% if emails is mapping -%}
-      {{ common.display_email_address(emails) }}
-    {% elif emails is iterable %}
-      {% for e in emails -%}
-        {{ common.display_email_address(e) }}
-      {% endfor -%}
-    {% endif -%}
-  {% endif -%}
-  </div>
-{% endmacro -%}
-
 <!-- Parse a pig tuple being passed through in string format -->
 
 {% block content -%}
