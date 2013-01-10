@@ -1,7 +1,19 @@
 <!-- Display a link as a value -->
 {% macro display_link(value, base_path, display) -%}
-  <div class="span"><a href="{{ base_path }}/{{ value }}">{{ display|truncate(length=80, killwords=False, end='...') }}</a></div>
+  <div class="span"><a href="{{ base_path }}/{{ value }}">{{ limit_length(display, 80) }}</a></div>
 {% endmacro -%}
+
+<!-- Display a label for a field -->
+{% macro display_label(name) -%}
+  {% if name -%}
+    <div class="span" style="width: 80px;">{{ name|e }}:</div>
+  {% endif -%}
+{% endmacro -%}
+
+{% macro limit_length(value, length) -%}
+  {% if value|length > 3 -%}{{value|truncate(length=length, killwords=True)}}{% endif -%}
+{% endmacro -%}
+
 
 <!-- Display a pair of navigation links for previous/next page in the email list -->
 {% macro display_nav(offsets, path, query) -%}
@@ -14,4 +26,19 @@
       {% endif -%}
     {% endfor -%}
   </div>
+{% endmacro -%}
+
+<!-- Display a field's value -->
+{% macro display_span(value) -%}
+  {% if(value) -%}
+    <div class="span" style="display: inline-block">{{ value }}</div>
+  {% endif -%}
+{% endmacro -%}
+
+{% macro display_email_address(email_record) -%}
+  {% if email_record['real_name'] and email_record['real_name']|length > 1 -%}
+    {{ limit_length(email_record['real_name'],20) + ' <' + email_record['address'] + '>'}}
+  {% else -%}
+    {{ email_record['address'] }}
+  {% endif -%}
 {% endmacro -%}

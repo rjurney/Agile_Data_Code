@@ -5,19 +5,19 @@
 {% import "macros.jnj" as common %}
 
 <!-- Display a list of emails across a span, as in to/from/cc/bcc/reply_to -->
-{% macro display_emails(list) -%}
-  {% if list and list is not string %}
-    {% for email in list -%}
-      {{ display_value(email, 'ARRAY_ELEM') }}
-    {% endfor -%}
+{% macro display_email_addresses(name, emails) -%}
+  <div class="row">
+  {% if emails -%}
+    {{ display_label(name) }}
+    {% if emails is mapping -%}
+      {{ common.display_email_address(emails) }}
+    {% elif emails is iterable %}
+      {% for e in emails -%}
+        {{ common.display_email_address(e) }}
+      {% endfor -%}
+    {% endif -%}
   {% endif -%}
-{% endmacro -%}
-
-<!-- Display a field's value -->
-{% macro display_value(record, key) -%}
-  {% if record is defined -%}
-    {{ record[key] }}
-  {% endif -%}
+  </div>
 {% endmacro -%}
 
 <!-- Parse a pig tuple being passed through in string format -->
@@ -28,18 +28,18 @@
   </div>
   <p class="lead">Emails</p>
   <div>
-    <table class="table table-striped table-bordered table-condensed" style="table-layout: fixed; width: 900px;">
+    <table class="table table-striped table-condensed">
       <thead>
-        <th style="width: 25%">From</th>
-        <th style="width: 60%">Subject</th>
-        <th style="width: 15%">Date</th>
+        <th>From</th>
+        <th>Subject</th>
+        <th>Date</th>
       </thead>
       <tbody>
         {% for email in data['emails'] %}
-        <tr>
-          <td>{{ display_emails(email['from']) }}</td>
+        <tr style="white-space:nowrap;">
+          <td>{{ common.display_email_address(email['from']) }}</td>
           <td>{{ common.display_link(email['message_id'], '/email', email['subject'])|safe }}</td>
-          <td>{{ email['date'] }}</td>
+          <td style="white-space:nowrap;">{{ email['date'] }}</td>
         </tr>
         {% endfor %}
       </tbody>
