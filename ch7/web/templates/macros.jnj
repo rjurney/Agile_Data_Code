@@ -6,7 +6,7 @@
 <!-- Display a label for a field -->
 {% macro display_label(name) -%}
   {% if name -%}
-    <div class="span" style="width: 80px;">{{ name|e }}:</div>
+    <div class="span" style="width: 80px;">{{ name }}:</div>
   {% endif -%}
 {% endmacro -%}
 
