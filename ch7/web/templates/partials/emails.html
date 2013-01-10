@@ -21,7 +21,7 @@
       <tbody>
         {% for email in data['emails'] %}
         <tr style="white-space:nowrap;">
-          <td>{{ common.display_email_address(email['from']) }}</td>
+          <td>{{ common.display_email_address(email['from'])|safe }}</td>
           <td>{{ common.display_link(email['message_id'], '/email', email['subject'])|safe }}</td>
           <td style="white-space:nowrap;">{{ email['date'] }}</td>
         </tr>
