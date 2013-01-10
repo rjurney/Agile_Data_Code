@@ -28,13 +28,6 @@
   </div>
 {% endmacro -%}
 
-<!-- Display a field's value -->
-{% macro display_span(value) -%}
-  {% if(value) -%}
-    <div class="span" style="display: inline-block">{{ value }}</div>
-  {% endif -%}
-{% endmacro -%}
-
 {% macro display_email_address(email_record) -%}
   {% if email_record['real_name'] and email_record['real_name']|length > 1 -%}
     {{ limit_length(email_record['real_name'],20) + ' <' + email_record['address'] + '>'}}

@@ -16,15 +16,8 @@
   {% if email[key] -%}
     <div class="row">
       {{ display_label(name) }}
-      {{ display_span(email[key]) }}
+      {{ email[key] }}
     </div>
-  {% endif -%}
-{% endmacro -%}
-
-<!-- Display a field's value -->
-{% macro display_span(value) -%}
-  {% if(value) -%}
-    <div class="span" style="display: inline-block">{{ value }}</div>
   {% endif -%}
 {% endmacro -%}
 
@@ -34,7 +27,7 @@
   {% if emails -%}
     {{ display_label(name) }}
     {% if emails is mapping -%}
-      {{ display_email_address(emails) }}
+      {{ display_email_address(emails)|safe }}
     {% elif emails is iterable %}
       {% for e in emails -%}
         {{ display_email_address(e) }}
@@ -46,9 +39,9 @@
 
 {% macro display_email_address(email_record) -%}
   {% if email_record['real_name']-%}
-    {{ display_span('"' + email_record['real_name']|safe + '" <' + email_record['address']) + '>' }}
+    {{ email_record['real_name']|safe + '" <' + email_record['address']|safe + '>' }}
   {% else -%}
-    {{ display_span('<' + email_record['address'] + '>')}}
+    {{ '<' + email_record['address'] + '>'}}
   {% endif -%}
 {% endmacro -%}
 
