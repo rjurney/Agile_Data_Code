@@ -21,30 +21,6 @@
   {% endif -%}
 {% endmacro -%}
 
-<!-- Display a list of emails across a span, as in to/from/cc/bcc/reply_to -->
-{% macro display_email_addresses(name, emails) -%}
-  <div class="row">
-  {% if emails -%}
-    {{ display_label(name) }}
-    {% if emails is mapping -%}
-      {{ display_email_address(emails)|safe }}
-    {% elif emails is iterable %}
-      {% for e in emails -%}
-        {{ display_email_address(e) }}
-      {% endfor -%}
-    {% endif -%}
-  {% endif -%}
-  </div>
-{% endmacro -%}
-
-{% macro display_email_address(email_record) -%}
-  {% if email_record['real_name']-%}
-    {{ email_record['real_name']|safe + '" <' + email_record['address']|safe + '>' }}
-  {% else -%}
-    {{ '<' + email_record['address'] + '>'}}
-  {% endif -%}
-{% endmacro -%}
-
 <!-- Link to another message ID -->
 {% macro display_in_reply_to(key, name) %}
   {% if email[key] != 'None' -%}
@@ -78,11 +54,11 @@
   </div>
   <p class="lead">Email ID: {{email['message_id']}}</p>
   <div>
-  {{ display_email_addresses('From', email['from']) }}
-  {{ display_email_addresses('To', email['tos']) }}
-  {{ display_email_addresses('Cc', email['ccs']) }}
-  {{ display_email_addresses('Bcc', email['bccs']) }}
-  {{ display_email_addresses('Reply-To', email['reply_tos']) }}
+  {{ common.display_email_addresses('From', email['from'])|safe }}
+  {{ common.display_email_addresses('To', email['tos'])|safe }}
+  {{ common.display_email_addresses('Cc', email['ccs'])|safe }}
+  {{ common.display_email_addresses('Bcc', email['bccs'])|safe }}
+  {{ common.display_email_addresses('Reply-To', email['reply_tos'])|safe }}
   
   {{ display_in_reply_to('in_reply_to', 'In-Reply-To') }}
   {{ display_field('date', 'Date') }}
