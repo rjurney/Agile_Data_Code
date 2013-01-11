@@ -19,7 +19,7 @@
         <th>Date</th>
       </thead>
       <tbody>
-        {% for email in data['emails'] %}
+        {% for email in emails %}
         <tr style="white-space:nowrap;">
           <td>{{ common.display_email_address(email['from'])|safe }}</td>
           <td>{{ common.display_link(email['message_id'], '/email', email['subject'])|safe }}</td>
@@ -28,8 +28,8 @@
         {% endfor %}
       </tbody>
     </table>
-    {% if data.has_key('nav_offsets') and data.has_key('nav_path') -%}
-      {{ common.display_nav(data['nav_offsets'], data['nav_path'], data['query'])|safe }}
+    {% if nav_offsets and nav_path -%}
+      {{ common.display_nav(nav_offsets, nav_path, query)|safe }}
     {% endif -%}
   </div>
 {% endblock -%}

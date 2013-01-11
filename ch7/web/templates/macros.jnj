@@ -24,13 +24,12 @@
   {% if value|length > 3 -%}{{value|truncate(length=length, killwords=True)}}{% endif -%}
 {% endmacro -%}
 
-
 <!-- Display a pair of navigation links for previous/next page in the email list -->
 {% macro display_nav(offsets, path, query) -%}
   <div style="text-align: center;">
     {% for key, values in offsets.items() -%}
-      {% if values['bottom'] >= 0 -%}      
-        <a style="margin-left: 20px; margin-right: 20px;" href="{{ path }}{%- if query -%}{{ query }}/{%- endif -%}{{ values['bottom'] }}/{{ values['top'] }}">{{ key }}</a>
+      {% if values['bottom_offset'] >= 0 -%}      
+        <a style="margin-left: 20px; margin-right: 20px;" href="{{ path }}{%- if query -%}{{ query }}/{%- endif -%}{{ values['bottom_offset'] }}/{{ values['top_offset'] }}">{{ key }}</a>
       {% else -%}
         {{ key }}
       {% endif -%}
