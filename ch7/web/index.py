@@ -1,7 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import pymongo
 import json
 import re
+import config
 
 # Setup Flask
 app = Flask(__name__)
@@ -28,10 +29,11 @@ def get_navigation_offsets(offset1, offset2, increment):
 @app.route('/')
 @app.route('/emails/')
 @app.route("/emails/<int:offset1>/<int:offset2>")
-def list_emails(offset1 = 0, offset2 = 16):
+def list_emails(offset1 = 0, offset2 = 16, query=None):
   email_list = emails.find()[offset1:offset2]
   nav_offsets = get_navigation_offsets(offset1, offset2, 16)
-  return render_template('partials/emails.html', emails=email_list, nav_offsets=nav_offsets, nav_path='/emails/')
+  query = request.args.get('search')
+  return render_template('partials/emails.html', emails=email_list, nav_offsets=nav_offsets, nav_path='/emails/', query=query)
 
 if __name__ == "__main__":
   app.run(debug=True)
