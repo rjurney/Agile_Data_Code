@@ -10,7 +10,7 @@
   <div class="page-header">
     <h1>Analytic Inbox</h1>
   </div>
-  <p class="lead">Emails</p>
+  <p class="lead">Emails{% if query -%}&nbsp;Search: {{query}} {% endif -%}</p>
   <div>
     <table class="table table-striped table-condensed">
       <thead>

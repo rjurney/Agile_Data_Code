@@ -47,7 +47,7 @@ def list_emails(offset1 = 0, offset2 = config.EMAILS_PER_PAGE, query=None):
   if query==None:
     email_list = emails.find()[offset1:offset2]
   else:
-    results = elastic.search({'query': {'match': { '_all': query}}, 'sort': {'date': {'order': 'desc'}}, 'from': 0, 'size': 20}, index="emails")
+    results = elastic.search({'query': {'match': { '_all': query}}, 'sort': {'date': {'order': 'desc'}}, 'from': offset1, 'size': config.EMAILS_PER_PAGE}, index="emails")
     print results
     email_list = process_search(results)
   nav_offsets = get_navigation_offsets(offset1, offset2, config.EMAILS_PER_PAGE)
