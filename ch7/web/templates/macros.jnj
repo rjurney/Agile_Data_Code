@@ -10,6 +10,16 @@
   {% endif -%}
 {% endmacro -%}
 
+<!-- Display other fields as wider spans -->
+{% macro display_field(value, name) -%}
+  {% if value -%}
+    <div class="row">
+      {{ display_label(name) }}
+      {{ value }}
+    </div>
+  {% endif -%}
+{% endmacro -%}
+
 {% macro limit_length(value, length) -%}
   {% if value|length > 3 -%}{{value|truncate(length=length, killwords=True)}}{% endif -%}
 {% endmacro -%}

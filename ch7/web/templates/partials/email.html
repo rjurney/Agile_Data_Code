@@ -11,16 +11,6 @@
   {% endif -%}
 {% endmacro -%}
 
-<!-- Display other fields as wider spans -->
-{% macro display_field(key, name) -%}
-  {% if email[key] -%}
-    <div class="row">
-      {{ display_label(name) }}
-      {{ email[key] }}
-    </div>
-  {% endif -%}
-{% endmacro -%}
-
 <!-- Link to another message ID -->
 {% macro display_in_reply_to(key, name) %}
   {% if email[key] != 'None' -%}
@@ -61,8 +51,8 @@
   {{ common.display_email_addresses('Reply-To', email['reply_tos'])|safe }}
   
   {{ display_in_reply_to('in_reply_to', 'In-Reply-To') }}
-  {{ display_field('date', 'Date') }}
-  {{ display_field('subject', 'Subject')}}
+  {{ common.display_field(email['date'], 'Date')|safe }}
+  {{ common.display_field(email['subject'], 'Subject')|safe }}
   
   {{ display_body(email) }}
   </div>
