@@ -4,18 +4,11 @@
 <!-- Include our common macro set -->
 {% import "macros.jnj" as common %}
 
-<!-- Display a label for a field -->
-{% macro display_label(name) -%}
-  {% if name -%}
-    <div class="span" style="width: 80px;">{{ name }}:</div>
-  {% endif -%}
-{% endmacro -%}
-
 <!-- Link to another message ID -->
 {% macro display_in_reply_to(key, name) %}
   {% if email[key] != 'None' -%}
     <div class="row">
-      {{ display_label(name) }}
+      {{ common.display_label(name)|safe }}
       {{ common.display_link(email[key], '/email', email[key])|safe }}
     </div>
   {% endif -%}
@@ -27,7 +20,7 @@
 {% endmacro -%}
 
 <!-- Display the email body -->
-{% macro display_body(record) -%}
+{% macro display_email_body(record) -%}
   {% if(record['body']) -%}
   <div class="row">
     <div class="span" style="display: inline-block; margin-top: 17px; background-color: #F7F7F7; padding: 10px;">
@@ -54,6 +47,6 @@
   {{ common.display_field(email['date'], 'Date')|safe }}
   {{ common.display_field(email['subject'], 'Subject')|safe }}
   
-  {{ display_body(email) }}
+  {{ display_email_body(email) }}
   </div>
 {% endblock -%}
