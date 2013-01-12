@@ -18,6 +18,39 @@ pip install -r requirements.txt
 pig -l /tmp -x local -param avros=<my_inbox_download_path> -param mongourl=mongodb://localhost/agile_data.emails -v -w avro_to_mongo.pig
 ```
 
+## Create the date and message_id indexes in MongoDB ##
+
+```
+mongo < list_emails.mongo.js
+```
+
+Or paste that file into the mongo shell.
+
+## Access Emails from Python ##
+
+To test the 'pymongo' module by listing emails, run:
+
+```
+python ./mongo_list.py
+```
+
+## Store Emails in ElasticSearch ##
+
+pig -l /tmp -x local -v -w ./elasticsearch.pig
+
+## Search Emails from Python ##
+
+Test pyelastic and the ElasticSearch query/sort APIs via:
+
+```
+python elasticsearch.py
+```
+
 ## Run Inbox Application ##
 
+Finally, most of this chapter will involve running our Python/Flask web application.
+
+```
 python web/index.py
+```
+
