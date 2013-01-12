@@ -53,5 +53,7 @@ def list_emails(offset1 = 0, offset2 = config.EMAILS_PER_PAGE, query=None):
   nav_offsets = get_navigation_offsets(offset1, offset2, config.EMAILS_PER_PAGE)
   return render_template('partials/emails.html', emails=email_list, nav_offsets=nav_offsets, nav_path='/emails/', query=query)
 
+# Display all email
+
 if __name__ == "__main__":
   app.run(debug=True)

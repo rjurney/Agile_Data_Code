@@ -16,8 +16,10 @@ set default_parallel 5
 set mapred.map.tasks.speculative.execution false
 set mapred.reduce.tasks.speculative.execution false
 
-/* Filter emails according to existence of header pairs: [from, to, cc, bcc, reply_to]
-Then project the header part, message_id and subject, and emit them, lowercased. */
+/* Macro to filter emails according to existence of header pairs: [from, to, cc, bcc, reply_to]
+Then project the header part, message_id and subject, and emit them, lowercased. 
+
+Note: you can't paste macros into Grunt as of Pig 0.11. You will have to execute this file. */
 DEFINE headers_messages(email, col) RETURNS set { 
   filtered = FILTER $email BY ($col IS NOT NULL);
   flat = FOREACH filtered GENERATE FLATTEN($col.address) AS $col, message_id, subject, date;
@@ -25,10 +27,9 @@ DEFINE headers_messages(email, col) RETURNS set {
   $set = FILTER lowered BY (address IS NOT NULL) and (address != '') and (date IS NOT NULL);
 }
 
-/* Nuke the email/address index, as we are about to replace it. */
-sh curl -XDELETE 'http://localhost:9200/address/emails'
-/* Nuke the Mongo store, as we are about to replace it. */
--- sh mongo agile_data --eval 'db.emails_per_address.drop\(\)'
+/* Nuke the Mongo stores, as we are about to replace it. */
+-- sh mongo agile_data --quiet --eval 'db.emails_per_address.drop(); exit();'
+-- sh mongo agile_data --quiet --eval 'db.addresses_per_email.drop(); exit();'
 
 rmf /tmp/emails_per_address.json
 
@@ -42,9 +43,15 @@ reply_tos = headers_messages(emails, 'reply_tos');
 
 address_messages = UNION froms, tos, ccs, bccs, reply_tos;
 
-emails_per_address = group address_messages by address;
-emails_per_address = foreach emails_per_address { address_messages = order address_messages by date desc;
-                                                  generate group as address, 
-                                                                    address_messages as address_messages; }
+/* Messages per email address, sorted by date desc */
+emails_per_address = foreach (group address_messages by address) { 
+                             address_messages = order address_messages by date desc;
+                             generate group as address, 
+                                      address_messages.(message_id, subject, date) as emails; 
+                             }
 
 store emails_per_address into 'mongodb://localhost/agile_data.emails_per_address' using MongoStorage();
+
+/* Email addresses per email */
+addresses_per_email = foreach (group address_messages by message_id) generate address_messages.(address) as addresses;
+store addresses_per_email into 'mongodb://localhost/agile_data.addresses_per_email' using MongoStorage();
