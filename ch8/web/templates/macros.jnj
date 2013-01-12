@@ -1,0 +1,62 @@
+<!-- Display a link as a value -->
+{% macro display_link(value, base_path, display) -%}
+  <div><a href="{{ base_path }}/{{ value }}">{{ limit_length(display, 80) }}</a></div>
+{% endmacro -%}
+
+<!-- Display a label for a field -->
+{% macro display_label(name) -%}
+  {% if name -%}
+    <div class="span" style="width: 80px;">{{ name }}:</div>
+  {% endif -%}
+{% endmacro -%}
+
+<!-- Display other fields as wider spans -->
+{% macro display_field(value, name) -%}
+  {% if value -%}
+    <div class="row">
+      {{ display_label(name) }}
+      {{ value }}
+    </div>
+  {% endif -%}
+{% endmacro -%}
+
+{% macro limit_length(value, length) -%}
+  {% if value|length > 3 -%}{{value|truncate(length=length, killwords=True)}}{% endif -%}
+{% endmacro -%}
+
+<!-- Display a pair of navigation links for previous/next page in the email list -->
+{% macro display_nav(offsets, path, query) -%}
+  <div style="text-align: center;">
+    {% for key, values in offsets.items() -%}
+      {% if values['bottom_offset'] >= 0 -%}      
+        <a style="margin-left: 20px; margin-right: 20px;" href="{{ path }}{{ values['bottom_offset'] }}/{{ values['top_offset'] }}{%- if query -%}?search={{query}}{%- endif -%}">{{ key }}</a>
+      {% else -%}
+        {{ key }}
+      {% endif -%}
+    {% endfor -%}
+  </div>
+{% endmacro -%}
+
+{% macro display_email_address(email_record) -%}
+  {% if email_record['real_name'] and email_record['real_name']|length > 1 -%}
+    {{ limit_length(email_record['real_name'],20)|safe + ' <' + email_record['address']|safe + '>'}}
+  {% else -%}
+    {{ '<' + email_record['address'] + '>'|safe }}
+  {% endif -%}
+{% endmacro -%}
+
+<!-- Display a list of emails across a span, as in to/from/cc/bcc/reply_to -->
+{% macro display_email_addresses(name, emails) -%}
+  <div class="row">
+  {% if emails -%}
+    {{ display_label(name) }}
+    {% if emails is mapping -%}
+      {{ display_email_address(emails) }}
+    {% elif emails is iterable %}
+      {% for e in emails -%}
+        {{ display_email_address(e) }}
+      {% endfor -%}
+    {% endif -%}
+  {% endif -%}
+  </div>
+{% endmacro -%}

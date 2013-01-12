@@ -1,0 +1,52 @@
+<!-- Extend our site layout -->
+{% extends "layout.html" %}
+
+<!-- Include our common macro set -->
+{% import "macros.jnj" as common %}
+
+<!-- Link to another message ID -->
+{% macro display_in_reply_to(key, name) %}
+  {% if email[key] != 'None' -%}
+    <div class="row">
+      {{ common.display_label(name)|safe }}
+      {{ common.display_link(email[key], '/email', email[key])|safe }}
+    </div>
+  {% endif -%}
+{% endmacro -%}
+
+<!-- Convert the carriage returns in a message body to HTML endlines -->
+{% macro convert_body(body) -%}
+  {{ body.replace('\r\n', '<br />')|safe }}
+{% endmacro -%}
+
+<!-- Display the email body -->
+{% macro display_email_body(record) -%}
+  {% if(record['body']) -%}
+  <div class="row">
+    <div class="span" style="display: inline-block; margin-top: 17px; background-color: #F7F7F7; padding: 10px;">
+      {{ convert_body(record['body']) }}
+    </div>
+  </div>
+  {% endif -%}
+{% endmacro -%}
+
+<!-- Block in which content appears in superclass - layout.html -->
+{% block content -%}
+  <div class="page-header">
+    <h1>Analytic Inbox</h1>
+  </div>
+  <p class="lead">Email ID: {{email['message_id']}}</p>
+  <div>
+  {{ common.display_email_addresses('From', email['from'])|safe }}
+  {{ common.display_email_addresses('To', email['tos'])|safe }}
+  {{ common.display_email_addresses('Cc', email['ccs'])|safe }}
+  {{ common.display_email_addresses('Bcc', email['bccs'])|safe }}
+  {{ common.display_email_addresses('Reply-To', email['reply_tos'])|safe }}
+  
+  {{ display_in_reply_to('in_reply_to', 'In-Reply-To') }}
+  {{ common.display_field(email['date'], 'Date')|safe }}
+  {{ common.display_field(email['subject'], 'Subject')|safe }}
+  
+  {{ display_email_body(email) }}
+  </div>
+{% endblock -%}
