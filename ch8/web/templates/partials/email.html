@@ -49,4 +49,16 @@
   
   {{ display_email_body(email) }}
   </div>
+  {% if addresses -%}
+    <div>
+      <h2 style="margin-bottom: 5px;">Email Addresses</h2>
+      <ul class="nav nav-pills">
+        {% for item in addresses -%}
+        <li class="active">
+          <a style="margin: 3px;" href="/email_address/{{ item['address'] }}">{{ item['address'] }}</a>
+        </li>
+        {% endfor -%}
+      </ul>
+    </div>
+  {% endif -%}
 {% endblock -%}

@@ -11,15 +11,18 @@ app = Flask(__name__)
 conn = pymongo.Connection() # defaults to localhost
 db = conn.agile_data
 emails = db['emails']
+addresses_per_email = db['adresses_per_email']
 
 # Setup ElasticSearch
 elastic = pyelasticsearch.ElasticSearch(config.ELASTIC_URL)
 
 # Controller: Fetch an email and display it
 @app.route("/email/<message_id>")
-def sent_counts(message_id):
+def email(message_id):
   email = emails.find_one({'message_id': message_id})
-  return render_template('partials/email.html', email=email)
+  addresses = addresses_per_email.find_one({'message_id': message_id})
+  print "Addresses: " + addresses
+  return render_template('partials/email.html', email=email, addresses=addresses)
   
 # Calculate email offsets for fetchig lists of emails from MongoDB
 def get_navigation_offsets(offset1, offset2, increment):
@@ -53,7 +56,7 @@ def list_emails(offset1 = 0, offset2 = config.EMAILS_PER_PAGE, query=None):
   nav_offsets = get_navigation_offsets(offset1, offset2, config.EMAILS_PER_PAGE)
   return render_template('partials/emails.html', emails=email_list, nav_offsets=nav_offsets, nav_path='/emails/', query=query)
 
-# Display all email
+# Display all email addresses for a given message
 
 if __name__ == "__main__":
   app.run(debug=True)

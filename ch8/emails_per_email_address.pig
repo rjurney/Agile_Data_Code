@@ -53,5 +53,5 @@ emails_per_address = foreach (group address_messages by address) {
 store emails_per_address into 'mongodb://localhost/agile_data.emails_per_address' using MongoStorage();
 
 /* Email addresses per email */
-addresses_per_email = foreach (group address_messages by message_id) generate address_messages.(address) as addresses;
+addresses_per_email = foreach (group address_messages by message_id) generate group as message_id, address_messages.(address) as addresses;
 store addresses_per_email into 'mongodb://localhost/agile_data.addresses_per_email' using MongoStorage();
