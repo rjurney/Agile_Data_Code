@@ -36,29 +36,31 @@
     <h1>Analytic Inbox</h1>
   </div>
   <p class="lead">Email ID: {{email['message_id']}}</p>
-  <div>
-  {{ common.display_email_addresses('From', email['from'])|safe }}
-  {{ common.display_email_addresses('To', email['tos'])|safe }}
-  {{ common.display_email_addresses('Cc', email['ccs'])|safe }}
-  {{ common.display_email_addresses('Bcc', email['bccs'])|safe }}
-  {{ common.display_email_addresses('Reply-To', email['reply_tos'])|safe }}
+  <div class="row">
+    <div class="span8">
+      {{ common.display_email_addresses('From', email['from'])|safe }}
+      {{ common.display_email_addresses('To', email['tos'])|safe }}
+      {{ common.display_email_addresses('Cc', email['ccs'])|safe }}
+      {{ common.display_email_addresses('Bcc', email['bccs'])|safe }}
+      {{ common.display_email_addresses('Reply-To', email['reply_tos'])|safe }}
   
-  {{ display_in_reply_to('in_reply_to', 'In-Reply-To') }}
-  {{ common.display_field(email['date'], 'Date')|safe }}
-  {{ common.display_field(email['subject'], 'Subject')|safe }}
+      {{ display_in_reply_to('in_reply_to', 'In-Reply-To') }}
+      {{ common.display_field(email['date'], 'Date')|safe }}
+      {{ common.display_field(email['subject'], 'Subject')|safe }}
   
-  {{ display_email_body(email) }}
-  </div>
-  {% if addresses -%}
-    <div>
-      <h2 style="margin-bottom: 5px;">Email Addresses</h2>
-      <ul class="nav nav-pills">
-        {% for item in addresses -%}
-        <li class="active">
-          <a style="margin: 3px;" href="/email_address/{{ item['address'] }}">{{ item['address'] }}</a>
-        </li>
-        {% endfor -%}
-      </ul>
+      {{ display_email_body(email) }}
     </div>
-  {% endif -%}
+    {% if addresses -%}
+      <div class="span4">
+        <h3 style="margin-bottom: 5px;">Email Addresses</h2>
+        <ul class="nav nav-pills">
+          {% for item in addresses -%}
+          <li class="active">
+            <a style="margin: 3px;" href="/email_address/{{ item['address'] }}">{{ item['address'] }}</a>
+          </li>
+          {% endfor -%}
+        </ul>
+      </div>
+    {% endif -%}
+  </div>
 {% endblock -%}
