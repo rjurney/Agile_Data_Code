@@ -48,7 +48,7 @@ python elasticsearch.py
 
 ## Run Inbox Application ##
 
-Finally, most of this chapter will involve running our Python/Flask web application.
+Finally, run our Python/Flask web application.
 
 ```
 python web/index.py
