@@ -1,5 +1,6 @@
 use agile_data
 show collections
+db.emails_per_address.ensureIndex({address: 1});
 db.emails_per_address.findOne()
 // {
 //  "_id" : ObjectId("50f1cfe93004acab8d0340ea"),
@@ -21,9 +22,11 @@ db.emails_per_address.findOne()
 //      "date" : "2012-12-27T15:36:58"
 //    },
 //    ...
+db.addresses_per_email.ensureIndex({address: 1});
 db.addresses_per_email.findOne()
 // {
-//  "_id" : ObjectId("50f1d57930043309e9c06304"),
+//  "_id" : ObjectId("50f1d8453004db7be37cffb0"),
+//  "message_id" : "kl59ip.iuzmp1@",
 //  "addresses" : [
 //    {
 //      "address" : "artifacts@computerhistory.org"
