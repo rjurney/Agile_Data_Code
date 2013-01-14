@@ -21,11 +21,17 @@ pig -l /tmp -x local -v -w emails_per_email_address.pig
 
 This will create a mongodb store: 'mongodb://localhost/agile_data.emails_per_address'
 
-## Query Emails per Email Address in MongoDB ##
+## Check MongoDB for Emails per Email Address ##
 
 ```
 mongo agile_data
 db.emails_per_address.findOne();
+```
+## Calculate the Distribution by Hour that Emails are Sent ##
+
+To create a sorted count of the hour of the day that emails are sent by each email address in your inbox:
+```
+pig -l /tmp -x local -v -w sent_distributions.pig
 ```
 
 ## Run Analytic Inbox Application ##
