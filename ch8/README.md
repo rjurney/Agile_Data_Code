@@ -12,6 +12,14 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## Run Analytic Inbox Application ##
+
+Most of this chapter will involve running our Python/Flask web application.
+
+```
+python web/index.py
+```
+
 ## Calculate Emails per Email Address ##
 
 To create a list of all email message_ids that each email address has been a part of:
@@ -52,13 +60,3 @@ db.sent_distributions.findOne()
 //      "total" : NumberLong(307)
 //    },
 ```
-
-## Run Analytic Inbox Application ##
-
-Most of this chapter will involve running our Python/Flask web application.
-
-```
-python web/index.py
-```
-
-## To run ##
