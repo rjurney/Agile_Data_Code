@@ -34,6 +34,25 @@ To create a sorted count of the hour of the day that emails are sent by each ema
 pig -l /tmp -x local -v -w sent_distributions.pig
 ```
 
+## Check MongoDB for Email Sent Distributions ##
+
+```
+mongo agile_data
+db.sent_distributions.findOne()
+// {
+//  "_id" : ObjectId("50f365ba30042ade8f22cb86"),
+//  "sender_email_address" : "russell.jurney@gmail.com",
+//  "sent_distribution" : [
+//    {
+//      "sent_hour" : "00",
+//      "total" : NumberLong(435)
+//    },
+//    {
+//      "sent_hour" : "01",
+//      "total" : NumberLong(307)
+//    },
+```
+
 ## Run Analytic Inbox Application ##
 
 Most of this chapter will involve running our Python/Flask web application.
