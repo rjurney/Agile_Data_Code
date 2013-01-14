@@ -53,5 +53,5 @@ sent_distributions = foreach (group sent_times by sender_email_address) {
     generate group as sender_email_address, sorted.(sent_hour, total) as sent_distribution;
 };
                                                         
-store sent_distributions into '/tmp/sent_distributions.txt';
+store sent_distributions into '/tmp/sent_distributions.avro' using AvroStorage();
 store sent_distributions into 'mongodb://localhost/agile_data.sent_distributions' using MongoStorage();

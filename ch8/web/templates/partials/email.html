@@ -37,7 +37,7 @@
   </div>
   <p class="lead">Email ID: {{email['message_id']}}</p>
   <div class="row">
-    <div class="span8">
+    <div class="span6">
       {{ common.display_email_addresses('From', email['from'])|safe }}
       {{ common.display_email_addresses('To', email['tos'])|safe }}
       {{ common.display_email_addresses('Cc', email['ccs'])|safe }}
@@ -50,8 +50,9 @@
   
       {{ display_email_body(email) }}
     </div>
+    <div class="span4">
     {% if addresses -%}
-      <div class="span4">
+      <div>
         <h3 style="margin-bottom: 5px;">Email Addresses</h2>
         <ul class="nav nav-pills">
           {% for item in addresses -%}
@@ -62,5 +63,6 @@
         </ul>
       </div>
     {% endif -%}
+    </div>
   </div>
 {% endblock -%}

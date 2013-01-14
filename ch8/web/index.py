@@ -12,6 +12,7 @@ conn = pymongo.Connection() # defaults to localhost
 db = conn.agile_data
 emails = db['emails']
 addresses_per_email = db['addresses_per_email']
+sent_distributions = db['sent_distributions']
 
 # Setup ElasticSearch
 elastic = pyelasticsearch.ElasticSearch(config.ELASTIC_URL)
@@ -21,7 +22,8 @@ elastic = pyelasticsearch.ElasticSearch(config.ELASTIC_URL)
 def email(message_id):
   email = emails.find_one({'message_id': message_id})
   address_hash = addresses_per_email.find_one({'message_id': message_id})
-  return render_template('partials/email.html', email=email, addresses=address_hash['addresses'])
+  sent_dist_hash = sent_distributions.find_one({'message_id': message_id})
+  return render_template('partials/email.html', email=email, addresses=address_hash['addresses'], sent_distributions=sent_dist_hash)
   
 # Calculate email offsets for fetchig lists of emails from MongoDB
 def get_navigation_offsets(offset1, offset2, increment):

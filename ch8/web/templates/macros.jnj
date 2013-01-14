@@ -1,6 +1,6 @@
 <!-- Display a link as a value -->
 {% macro display_link(value, base_path, display) -%}
-  <div><a href="{{ base_path }}/{{ value }}">{{ limit_length(display, 80) }}</a></div>
+  <div><a href="{{ base_path }}/{{ value }}">{{ limit_length(display, 50) }}</a></div>
 {% endmacro -%}
 
 <!-- Display a label for a field -->
