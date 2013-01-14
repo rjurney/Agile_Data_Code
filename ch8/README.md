@@ -92,4 +92,6 @@ db.sent_distributions.findOne()
       "total" : NumberLong(307)
     },
     ...
+  ]
+}
 ```
