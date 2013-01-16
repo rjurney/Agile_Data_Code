@@ -50,7 +50,7 @@ sent_times = foreach (group pairs by (sender_email_address, sent_hour)) generate
 sent_distributions = foreach (group sent_times by sender_email_address) { 
     solid = filter sent_times by (sent_hour is not null) and (total is not null);
     sorted = order solid by sent_hour;
-    generate group as sender_email_address, sorted.(sent_hour, total) as sent_distribution;
+    generate group as address, sorted.(sent_hour, total) as sent_distribution;
 };
                                                         
 store sent_distributions into '/tmp/sent_distributions.avro' using AvroStorage();

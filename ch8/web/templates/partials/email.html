@@ -65,8 +65,45 @@
     {% endif -%}
     {% if sent_distributions -%}
       <div>
+        <table class="table table-striped table-condensed">
+          <thead>
+            <th>From</th>
+            <th>Subject</th>
+            <th>Date</th>
+          </thead>
+          <tbody>
+            {% for item in emails %}
+            <tr style="white-space:nowrap;">
+              <td>{{ common.display_email_address(email['from'])|safe }}</td>
+              <td>{{ common.display_link(email['message_id'], '/email', email['subject'])|safe }}</td>
+              <td style="white-space:nowrap;">{{ email['date'] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div id="chart">
         
       </div>
+      <script>
+      nv.addGraph(function() {
+        var chart = nv.models.discreteBarChart()
+            .x(function(d) { return d.sent_hour })
+            .y(function(d) { return d.total })
+            .staggerLabels(true)
+            .tooltips(false)
+            .showValues(true)
+
+        d3.select('#chart svg')
+            .datum(data)
+          .transition().duration(500)
+            .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+      });
+      </script>
     {% endif -%}
     </div>
   </div>

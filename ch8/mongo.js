@@ -5,7 +5,7 @@ db.emails_per_address.findOne()
 // {
 //  "_id" : ObjectId("50f1cfe93004acab8d0340ea"),
 //  "address" : "user@pig.apache.org",
-//  "address_messages" : [
+//  "messages" : [
 //    {
 //      "message_id" : "2CC96549-8E00-46BF-998E-5606B6952467@gmail.com",
 //      "subject" : "Re: Group by with count",
@@ -43,7 +43,7 @@ db.sent_distributions.ensureIndex({sender_email_address: 1})
 db.sent_distributions.findOne()
 // {
 //  "_id" : ObjectId("50f365ba30042ade8f22cb86"),
-//  "sender_email_address" : "russell.jurney@gmail.com",
+//  "address" : "russell.jurney@gmail.com",
 //  "sent_distribution" : [
 //    {
 //      "sent_hour" : "00",

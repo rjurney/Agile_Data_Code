@@ -12,6 +12,7 @@ conn = pymongo.Connection() # defaults to localhost
 db = conn.agile_data
 emails = db['emails']
 addresses_per_email = db['addresses_per_email']
+emails_per_address = db['emails_per_address']
 sent_distributions = db['sent_distributions']
 
 # Setup ElasticSearch
@@ -22,8 +23,7 @@ elastic = pyelasticsearch.ElasticSearch(config.ELASTIC_URL)
 def email(message_id):
   email = emails.find_one({'message_id': message_id})
   address_hash = addresses_per_email.find_one({'message_id': message_id})
-  sent_dist_hash = sent_distributions.find_one({'message_id': message_id})
-  return render_template('partials/email.html', email=email, addresses=address_hash['addresses'], sent_distributions=sent_dist_hash)
+  return render_template('partials/email.html', email=email, addresses=address_hash['addresses'])
   
 # Calculate email offsets for fetchig lists of emails from MongoDB
 def get_navigation_offsets(offset1, offset2, increment):
@@ -57,7 +57,14 @@ def list_emails(offset1 = 0, offset2 = config.EMAILS_PER_PAGE, query=None):
   nav_offsets = get_navigation_offsets(offset1, offset2, config.EMAILS_PER_PAGE)
   return render_template('partials/emails.html', emails=email_list, nav_offsets=nav_offsets, nav_path='/emails/', query=query)
 
-# Display all email addresses for a given message
+# Display information about an email address
+@app.route('/email_address/<string:address>')
+def email_address(address):
+  emails = emails_per_address.find_one({'address': address})
+  print emails
+  sent_dist_hash = sent_distributions.find_one({'address': address})
+  print sent_dist_hash
+  return render_template('partials/email_address.html', emails=emails['emails'], sent_distribution=sent_dist_hash['sent_distribution'])
 
 if __name__ == "__main__":
   app.run(debug=True)

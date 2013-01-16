@@ -43,11 +43,12 @@ reply_tos = headers_messages(emails, 'reply_tos');
 
 address_messages = UNION froms, tos, ccs, bccs, reply_tos;
 
-/* Messages per email address, sorted by date desc */
+/* Messages per email address, sorted by date desc. Limit to 50 to ensure rapid access. */
 emails_per_address = foreach (group address_messages by address) { 
                              address_messages = order address_messages by date desc;
+                             top_50 = limit address_messages 50;
                              generate group as address, 
-                                      address_messages.(message_id, subject, date) as emails; 
+                                      top_50.(message_id, subject, date) as emails; 
                              }
 
 store emails_per_address into 'mongodb://localhost/agile_data.emails_per_address' using MongoStorage();
