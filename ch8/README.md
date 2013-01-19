@@ -55,7 +55,7 @@ db.emails_per_address.findOne();
 		...
 }
 
-db.addresses_per_email.ensureIndex({address: 1});
+db.addresses_per_email.ensureIndex({message_id: 1});
 db.addresses_per_email.findOne()
 {
 	"_id" : ObjectId("50f1d8453004db7be37cffb0"),
@@ -86,7 +86,7 @@ See 'mongo.js'
 
 ```
 mongo agile_data
-db.sent_distributions.ensureIndex({sender_email_address: 1})
+db.sent_distributions.ensureIndex({address: 1})
 db.sent_distributions.findOne()
 {
   "_id" : ObjectId("50f365ba30042ade8f22cb86"),
