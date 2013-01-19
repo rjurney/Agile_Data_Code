@@ -66,28 +66,35 @@
             sssafafafa
           </div>
           <script>
-           var myColor = function() { return '#08C'; }
-           var data = [{"key": "Test Chart", "values": {{ chart_json|safe }}}];
-           nv.addGraph(function() {
-             var chart = nv.models.discreteBarChart()
-                 .x(function(d) { return d.sent_hour })
-                 .y(function(d) { return d.total })
-                 .staggerLabels(true)
-                 .tooltips(false)
-                 .showValues(false)
-                 .color(myColor)
-                 .width(350)
-                 .height(300)
+          // Custom color function to highlight mode of the data
+          var data = [{"key": "Test Chart", "values": {{ chart_json|safe }}}];
+          var defaultColor = '#08C';
+          var modeColor = '#4CA9F5'; 
+          var maxy = d3.max(data[0]['values'], function(d) { return d.total; });
+          var myColor = function(d, i) { 
+             if(d['total'] == maxy) { return modeColor; }
+             else { return defaultColor; }
+          }
+          nv.addGraph(function() {
+           var chart = nv.models.discreteBarChart()
+               .x(function(d) { return d.sent_hour })
+               .y(function(d) { return d.total })
+               .staggerLabels(true)
+               .tooltips(false)
+               .showValues(false)
+               .color(myColor)
+               .width(350)
+               .height(300)
 
-             d3.select('#chart svg')
-                 .datum(data)
-               .transition().duration(500)
-                 .call(chart);
+           d3.select('#chart svg')
+               .datum(data)
+             .transition().duration(500)
+               .call(chart);
 
-             nv.utils.windowResize(chart.update);
+           nv.utils.windowResize(chart.update);
 
-             return chart;
-           });
+           return chart;
+          });
 
            </script>
         {% endif -%}
