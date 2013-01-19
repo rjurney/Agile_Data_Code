@@ -32,9 +32,6 @@
 
 <!-- Block in which content appears in superclass - layout.html -->
 {% block content -%}
-  <div class="page-header">
-    <h1>Analytic Inbox</h1>
-  </div>
   <p class="lead">Email ID: {{email['message_id']}}</p>
   <div class="row">
     <div class="span6">
@@ -62,21 +59,25 @@
           </ul>
         {% endif -%}
         {% if sent_distribution -%}
+          <h3 style="margin-bottom: 5px;">Emails Sent by Hour</h2>
+          <h5>{{ email['from']['address'] }}</h5>
           <div id="chart">
             <svg></svg>
             sssafafafa
           </div>
           <script>
-           var myColor = function() { return '#1BAFE0'; }
+           var myColor = function() { return '#08C'; }
            var data = [{"key": "Test Chart", "values": {{ chart_json|safe }}}];
            nv.addGraph(function() {
              var chart = nv.models.discreteBarChart()
                  .x(function(d) { return d.sent_hour })
                  .y(function(d) { return d.total })
-                 .staggerLabels(false)
+                 .staggerLabels(true)
                  .tooltips(false)
                  .showValues(false)
                  .color(myColor)
+                 .width(350)
+                 .height(300)
 
              d3.select('#chart svg')
                  .datum(data)

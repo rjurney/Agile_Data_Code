@@ -25,7 +25,10 @@ def email(message_id):
   address_hash = addresses_per_email.find_one({'message_id': message_id})
   sent_dist_records = sent_distributions.find_one({'address': email['from']['address']})
   print sent_dist_records
-  return render_template('partials/email.html', email=email, addresses=address_hash['addresses'], chart_json=json.dumps(sent_dist_records['sent_distribution']), sent_distribution=sent_dist_records)
+  return render_template('partials/email.html', email=email, 
+                                                addresses=address_hash['addresses'], 
+                                                chart_json=json.dumps(sent_dist_records['sent_distribution']), 
+                                                sent_distribution=sent_dist_records)
   
 # Calculate email offsets for fetchig lists of emails from MongoDB
 def get_navigation_offsets(offset1, offset2, increment):
@@ -64,6 +67,13 @@ def address(address):
   emails = emails_per_address.find_one({'address': address})
   sent_dist_hash = sent_distributions.find_one({'address': address})
   return render_template('partials/address.html', emails=emails['emails'], sent_distribution=sent_dist_hash['sent_distribution'])
+
+# Display sent distributions for a give email
+@app.route('/sent_distribution/<string:sender>')
+def sent_distribution(sender):
+  sent_dist_records = sent_distributions.find_one({'address': sender})
+  return render_template('partials/sent_distribution.html', chart_json=json.dumps(sent_dist_records['sent_distribution']), 
+                                                            sent_distribution=sent_dist_records)
 
 if __name__ == "__main__":
   app.run(debug=True)
