@@ -35,3 +35,14 @@ cd gmail
 Chapter 7: Collecting and Displaying Records
 ============================================
 
+Chapter 8: Charts
+=================
+
+Chapter 9: Reports
+==================
+
+Chapter 10: Predictions
+=======================
+
+Chapter 11: Actions
+===================
