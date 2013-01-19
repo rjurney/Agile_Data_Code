@@ -33,6 +33,8 @@ This will create a mongodb store: 'mongodb://localhost/agile_data.emails_per_add
 
 ```
 mongo agile_data
+
+db.emails_per_address.ensureIndex({address: 1});
 db.emails_per_address.findOne();
 {
 	"_id" : ObjectId("50f1d8603004db7be38006bb"),
@@ -50,6 +52,8 @@ db.emails_per_address.findOne();
 		},
 		...
 }
+
+db.addresses_per_email.ensureIndex({address: 1});
 db.addresses_per_email.findOne()
 {
 	"_id" : ObjectId("50f1d8453004db7be37cffb0"),
@@ -78,6 +82,7 @@ pig -l /tmp -x local -v -w sent_distributions.pig
 
 ```
 mongo agile_data
+db.sent_distributions.ensureIndex({sender_email_address: 1})
 db.sent_distributions.findOne()
 {
   "_id" : ObjectId("50f365ba30042ade8f22cb86"),
