@@ -31,6 +31,8 @@ This will create a mongodb store: 'mongodb://localhost/agile_data.emails_per_add
 
 ## Check MongoDB for Emails per Email Address ##
 
+See 'mongo.js'
+
 ```
 mongo agile_data
 
@@ -79,6 +81,8 @@ pig -l /tmp -x local -v -w sent_distributions.pig
 ```
 
 ## Check MongoDB for Email Sent Distributions ##
+
+See 'mongo.js'
 
 ```
 mongo agile_data
