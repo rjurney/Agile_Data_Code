@@ -34,7 +34,7 @@ def email(message_id):
 def get_navigation_offsets(offset1, offset2, increment):
   offsets = {}
   offsets['Next'] = {'top_offset': offset2 + increment, 'bottom_offset': offset1 + increment}
-  offsets['Previous'] = {'top_offset': max(offset2 - increment, 0), 'bottom_offset': max(offset1 - increment, 0)} # Don't go < 0
+  offsets['Previous'] = {'top_offset': max(offset2 - increment, increment), 'bottom_offset': max(offset1 - increment, 0)} # Don't go < (0,min increment)
   return offsets
 
 # Process elasticsearch hits and return email records
@@ -51,22 +51,36 @@ def process_search(results):
 @app.route('/')
 @app.route('/emails/')
 @app.route("/emails/<int:offset1>/<int:offset2>")
-def list_emails(offset1 = 0, offset2 = config.EMAILS_PER_PAGE, query=None):
+def list_emails(offset1 = 0, offset2 = config.EMAILS_PER_LIST_PAGE, query=None):
   query = request.args.get('search')
   if query==None:
     email_list = emails.find()[offset1:offset2]
   else:
-    results = elastic.search({'query': {'match': { '_all': query}}, 'sort': {'date': {'order': 'desc'}}, 'from': offset1, 'size': config.EMAILS_PER_PAGE}, index="emails")
+    results = elastic.search({'query': 
+                              {'match': 
+                                { '_all': query}}, 
+                              'sort': 
+                                {'date': {'order': 'desc'}}, 
+                              'from': offset1, 
+                              'size': config.EMAILS_PER_LIST_PAGE}, 
+                              index="emails")
     email_list = process_search(results)
-  nav_offsets = get_navigation_offsets(offset1, offset2, config.EMAILS_PER_PAGE)
+  nav_offsets = get_navigation_offsets(offset1, offset2, config.EMAILS_PER_LIST_PAGE)
   return render_template('partials/emails.html', emails=email_list, nav_offsets=nav_offsets, nav_path='/emails/', query=query)
 
 # Display information about an email address
 @app.route('/address/<string:address>')
-def address(address):
-  emails = emails_per_address.find_one({'address': address})
+@app.route('/address/<string:address>/<int:offset1>/<int:offset2>')
+def address(address, offset1=0, offset2=config.EMAILS_PER_ADDRESS_PAGE):
+  address = address.lower() # In case the email record linking to this isn't lowered... consider ETL on base document in Pig
+  emails = emails_per_address.find_one({'address': address})['emails'][offset1:offset2]
+  nav_offsets = get_navigation_offsets(offset1, offset2, config.EMAILS_PER_ADDRESS_PAGE)
   sent_dist_hash = sent_distributions.find_one({'address': address})
-  return render_template('partials/address.html', emails=emails['emails'], sent_distribution=sent_dist_hash['sent_distribution'])
+  return render_template('partials/address.html', 
+                         emails=emails, 
+                         nav_offsets=nav_offsets, 
+                         nav_path='/address/' + address + '/', 
+                         sent_distribution=sent_dist_hash['sent_distribution'])
 
 # Display sent distributions for a give email
 @app.route('/sent_distribution/<string:sender>')
