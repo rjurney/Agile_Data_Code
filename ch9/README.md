@@ -20,18 +20,22 @@ Most of this chapter will involve running our Python/Flask web application.
 python web/index.py
 ```
 
-## Calculate something... ##
+## Calculate Related Email Addresses ##
 
-To calculate something...
+To calculate something top email addresses, run:
 ```
-pig -l /tmp -x local -v -w .pig
+pig -l /tmp -x local -v -w related_email_addresses.pig
 ```
 
-This will create a mongodb store: 'mongodb://localhost/agile_data.'
+This will create a mongodb store: 'mongodb://localhost/agile_data.related_addresses'
 
 ## Check MongoDB for Something ##
 
+Run 'mongo.js', or in the mongo terminal:
+
 ```
 mongo agile_data
+db.related_addresses.ensureIndex({address: 1});
+db.related_addresses.find();
 
 ```
