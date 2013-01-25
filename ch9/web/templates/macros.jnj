@@ -41,7 +41,7 @@
   {% if email_record['real_name'] and email_record['real_name']|length > 1 -%}
     {{ display_link(email_record['address']|safe, '/address'|safe, limit_length(email_record['real_name'],20)|safe + ' <' + email_record['address']|safe + '>')|safe}}
   {% else -%}
-    {{ '<' + email_record['address'] + '>'|safe }}
+    {{ display_link(email_record['address']|safe, '/address'|safe, '<' + email_record['address'] + '>'|safe) }}
   {% endif -%}
 {% endmacro -%}
 
