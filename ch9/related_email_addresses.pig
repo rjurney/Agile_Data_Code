@@ -44,8 +44,8 @@ counts = foreach (group pairs by (from, to)) generate flatten(group) as (from, t
 top_pairs = foreach (group counts by from) {
   filtered = filter counts by (to is not null);
   sorted = order filtered by total desc;
-  top_10 = limit sorted 10;
-  generate group as address, top_10.(to) as related_addresses;
+  top_8 = limit sorted 8;
+  generate group as address, top_8.(to) as related_addresses;
 }
 
 store top_pairs into '/tmp/related_addresses.txt';

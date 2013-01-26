@@ -14,6 +14,7 @@ emails = db['emails']
 addresses_per_email = db['addresses_per_email']
 emails_per_address = db['emails_per_address']
 sent_distributions = db['sent_distributions']
+related_addresses = db['related_addresses']
 
 # Setup ElasticSearch
 elastic = pyelasticsearch.ElasticSearch(config.ELASTIC_URL)
@@ -68,6 +69,13 @@ def list_emails(offset1 = 0, offset2 = config.EMAILS_PER_LIST_PAGE, query=None):
   nav_offsets = get_navigation_offsets(offset1, offset2, config.EMAILS_PER_LIST_PAGE)
   return render_template('partials/emails.html', emails=email_list, nav_offsets=nav_offsets, nav_path='/emails/', query=query)
 
+# Display sent distributions for a give email
+@app.route('/sent_distribution/<string:sender>')
+def sent_distribution(sender):
+  sent_dist_records = sent_distributions.find_one({'address': sender})
+  return render_template('partials/sent_distribution.html', chart_json=json.dumps(sent_dist_records['sent_distribution']), 
+                                                            sent_distribution=sent_dist_records)
+
 # Display information about an email address
 @app.route('/address/<string:address>')
 @app.route('/address/<string:address>/<int:offset1>/<int:offset2>')
@@ -76,18 +84,17 @@ def address(address, offset1=0, offset2=config.EMAILS_PER_ADDRESS_PAGE):
   emails = emails_per_address.find_one({'address': address})['emails'][offset1:offset2]
   nav_offsets = get_navigation_offsets(offset1, offset2, config.EMAILS_PER_ADDRESS_PAGE)
   sent_dist_hash = sent_distributions.find_one({'address': address})
+  addresses = related_addresses.find_one({'address': address})['related_addresses']
+  sent_dist_records = sent_distributions.find_one({'address': address})
   return render_template('partials/address.html', 
                          emails=emails, 
                          nav_offsets=nav_offsets, 
                          nav_path='/address/' + address + '/', 
-                         sent_distribution=sent_dist_hash['sent_distribution'])
-
-# Display sent distributions for a give email
-@app.route('/sent_distribution/<string:sender>')
-def sent_distribution(sender):
-  sent_dist_records = sent_distributions.find_one({'address': sender})
-  return render_template('partials/sent_distribution.html', chart_json=json.dumps(sent_dist_records['sent_distribution']), 
-                                                            sent_distribution=sent_dist_records)
+                         sent_distribution=sent_dist_hash['sent_distribution'],
+                         addresses=addresses,
+                         chart_json=json.dumps(sent_dist_records['sent_distribution']),
+                         address='<' + address + '>'
+                         )
 
 if __name__ == "__main__":
   app.run(debug=True)
