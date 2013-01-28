@@ -29,13 +29,27 @@ pig -l /tmp -x local -v -w related_email_addresses.pig
 
 This will create a mongodb store: 'mongodb://localhost/agile_data.related_addresses'
 
-## Check MongoDB for Something ##
+## Check MongoDB for Related Email Addresses ##
 
 Run 'mongo.js', or in the mongo terminal:
 
 ```
 mongo agile_data
 db.related_addresses.ensureIndex({address: 1});
-db.related_addresses.find();
+db.related_addresses.findOne();
+```
 
+## Fix Sent Distributions in Pig
+
+In Mongo:
+
+```
+use agile_data
+db.sent_distributions.drop();
+```
+
+Then run pig:
+
+```
+pig -l /tmp -x local -v -w ./sent_distributions_fix.pig
 ```
