@@ -1,0 +1,37 @@
+DEFINE tf_idf(in_relation, id_field, text_field) RETURNS out_relation {
+  token_records = foreach $in_relation generate $id_field, FLATTEN(TOKENIZE($text_field)) as tokens;
+ 
+  /* Calculate the term count per document */
+  doc_word_totals = foreach (group token_records by ($id_field, tokens)) generate 
+    FLATTEN(group) as ($id_field, token), 
+    COUNT_STAR(token_records) as doc_total;
+ 
+  /* Calculate the document size */
+  pre_term_counts = foreach (group doc_word_totals by $id_field) generate
+    group AS $id_field,
+    FLATTEN(doc_word_totals.(token, doc_total)) as (token, doc_total), 
+    SUM(doc_word_totals.doc_total) as doc_size;
+ 
+  /* Calculate the TF */
+  term_freqs = foreach pre_term_counts generate $id_field as $id_field,
+    token as token,
+    ((double)doc_total / (double)doc_size) AS term_freq;
+ 
+  /* Get count of documents using each token, for idf */
+  token_usages = foreach (group term_freqs by token) generate
+    FLATTEN(term_freqs) as ($id_field, token, term_freq),
+    COUNT_STAR(term_freqs) as num_docs_with_token;
+ 
+  /* Get document count */
+  just_ids = foreach $in_relation generate $id_field;
+  ndocs = foreach (group just_ids all) generate COUNT_STAR(just_ids) as total_docs;
+ 
+  /* Note the use of Pig Scalars to calculate idf */
+  $out_relation = foreach token_usages {
+    idf    = LOG((double)ndocs.total_docs/(double)num_docs_with_token);
+    tf_idf = (double)term_freq * idf;
+    generate $id_field as $id_field,
+      token as score,
+      (chararray)tf_idf as value:chararray;
+  };
+};
