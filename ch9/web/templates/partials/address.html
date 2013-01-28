@@ -37,35 +37,70 @@
       <svg></svg>
     </div>
     <script>
-     var myColor = function() { return '#08C'; }
-     var data = [{"key": "Test Chart", "values": {{ chart_json|safe }}}];
-     nv.addGraph(function() {
-       var chart = nv.models.discreteBarChart()
-           .x(function(d) { return d.sent_hour })
-           .y(function(d) { return d.total })
-           .staggerLabels(true)
-           .tooltips(false)
-           .showValues(false)
-           .color(myColor)
-           .width(350)
-           .height(300)
+    // Get "00" - "23"
+    function makeHourRange(num) {
+      return num < 10 ? "0" + num.toString() : num.toString();
+    }
 
-       d3.select('#chart svg')
-           .datum(data)
-         .transition().duration(500)
-           .call(chart);
+    function fillBlanks(rawData) {
+      var hourRange = d3.range(0,24);
+      var ourData = Array();
+      for (hour in hourRange)
+      {
+        var hourString = makeHourRange(hour);
+        var found = false;
+        for(x in rawData)
+        {
+          if(rawData[x]['sent_hour'] == hourString)
+          {
+            found = true;
+            break;
+          }
+        }
+        if(found == true)
+        {
+          ourData.push(rawData[x]);
+        }
+        else
+        {
+          ourData.push({'sent_hour': hourString, 'total': 0})
+        }
+      }
+      return ourData;
+    }
 
-       nv.utils.windowResize(chart.update);
+    var rawData = {{ chart_json|safe }};
+    var filledData = fillBlanks(rawData);
+    
+    var myColor = function() { return '#08C'; }
+    var data = [{"key": "Test Chart", "values": filledData}]; //{{ chart_json|safe }}}];
+    nv.addGraph(function() {
+     var chart = nv.models.discreteBarChart()
+         .x(function(d) { return d.sent_hour })
+         .y(function(d) { return d.total })
+         .staggerLabels(true)
+         .tooltips(false)
+         .showValues(false)
+         .color(myColor)
+         .width(350)
+         .height(300)
 
-       return chart;
-     });
+     d3.select('#chart svg')
+         .datum(data)
+       .transition().duration(500)
+         .call(chart);
 
-     </script>
+     nv.utils.windowResize(chart.update);
+
+     return chart;
+    });
+
+    </script>
   {% endif -%}
   </div>
     <div class="span4">
       {% if addresses -%}
-        <h3 style="margin-bottom: 5px;">Email Addresses</h2>
+        <h3 style="margin-bottom: 5px;">Related Email Addresses</h2>
         <ul class="nav nav-pills">
           {% for item in addresses -%}
           <li class="active">
