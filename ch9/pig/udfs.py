@@ -12,3 +12,4 @@ def fill_in_blanks(sent_dist):
     else:
       out_data.append(tuple([hour, 0]))
   return out_data
+

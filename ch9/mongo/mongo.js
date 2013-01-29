@@ -41,3 +41,10 @@ db.related_addresses.find();
 //    }
 //  ]
 // }
+show collections
+// ...
+// topics_per_email
+// ...
+db.topics_per_document.ensureIndex({message_id: 1})
+db.topics_per_document.findOne();
+

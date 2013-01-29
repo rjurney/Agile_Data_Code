@@ -15,6 +15,7 @@ addresses_per_email = db['addresses_per_email']
 emails_per_address = db['emails_per_address']
 sent_distributions = db['sent_distributions']
 related_addresses = db['related_addresses']
+topics_per_email = db['topics_per_email']
 
 # Setup ElasticSearch
 elastic = pyelasticsearch.ElasticSearch(config.ELASTIC_URL)
@@ -25,11 +26,12 @@ def email(message_id):
   email = emails.find_one({'message_id': message_id})
   address_hash = addresses_per_email.find_one({'message_id': message_id})
   sent_dist_records = sent_distributions.find_one({'address': email['from']['address']})
-  print sent_dist_records
+  topics = topics_per_email.find_one({'message_id': message_id})
   return render_template('partials/email.html', email=email, 
                                                 addresses=address_hash['addresses'], 
                                                 chart_json=json.dumps(sent_dist_records['sent_distribution']), 
-                                                sent_distribution=sent_dist_records)
+                                                sent_distribution=sent_dist_records,
+                                                topics=topics)
   
 # Calculate email offsets for fetchig lists of emails from MongoDB
 def get_navigation_offsets(offset1, offset2, increment):
