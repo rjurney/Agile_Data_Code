@@ -46,6 +46,7 @@ token_filter = filter with_quantiles by token_counts::total > quantiles::low_fil
 
 filtered_tokens = join token_records_a by token, token_filter by token;
 trimmed_tokens = foreach filtered_tokens generate token_records_a::message_id as message_id, funcs.remove_punctuation(token_records_a::token) as token;
+trimmed_tokens = filter trimmed_tokens by token is not null and SIZE(token) > 2;
 
 store trimmed_tokens into '/tmp/trimmed_tokens.txt';
 
