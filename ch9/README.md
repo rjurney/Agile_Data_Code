@@ -22,7 +22,7 @@ python web/index.py
 
 ## Calculate Related Email Addresses ##
 
-To calculate something top email addresses, run:
+To calculate top email addresses, run:
 
 ```
 pig -l /tmp -x local -v -w related_email_addresses.pig
