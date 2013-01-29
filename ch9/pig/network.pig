@@ -36,20 +36,29 @@ DEFINE header_pairs(email, col1, col2) RETURNS pairs {
   $pairs = FOREACH flat GENERATE LOWER($col1) AS ego1, LOWER($col2) AS ego2;
 }
 
+/* Automate calling the above. */
+DEFINE count_headers(emails) RETURNS pairs {
+  from_to = header_pairs($emails, from, tos);
+  from_cc = header_pairs($emails, from, ccs);
+  from_bcc = header_pairs($emails, from, bccs);
+  $pairs = UNION from_to, from_cc, from_bcc;
+}
+
 /* Get email address pairs for each type of connection, and union them together */
-emails = LOAD '/me/Data/test_mbox' USING AvroStorage();
-from_to = header_pairs(emails, from, tos);
-from_cc = header_pairs(emails, from, ccs);
-from_bcc = header_pairs(emails, from, bccs);
-pairs = UNION from_to, from_cc, from_bcc;
-store pairs into '/tmp/pairs.txt';
+emails1 = LOAD '/me/Data/test_mbox' USING AvroStorage();
+pairs1 = count_headers(emails1);
+store pairs1 into '/tmp/pairs.txt';
+
+emails2 = LOAD '/me/Data/test_mbox' USING AvroStorage();
+pairs2 = count_headers(emails2);
 
 /* Get a count of emails over these edges. */
-edge_list = FOREACH (GROUP pairs BY (ego1, ego2)) GENERATE FLATTEN(group) AS (ego1, ego2), 
-                                                           COUNT_STAR(pairs) AS total;
+edge_list = FOREACH (GROUP pairs1 BY (ego1, ego2)) GENERATE FLATTEN(group) AS (ego1, ego2), 
+                                                            COUNT_STAR(pairs1) AS total;
 filtered_edge_list = filter edge_list by total > 1;
-second_edge_list = FOREACH (GROUP pairs BY (ego1, ego2)) GENERATE FLATTEN(group) AS (ego1, ego2), 
-                                                           COUNT_STAR(pairs) AS total;
+store filtered_edge_list into '/tmp/simple_edge_list.txt';
+second_edge_list = FOREACH (GROUP pairs2 BY (ego1, ego2)) GENERATE FLATTEN(group) AS (ego1, ego2), 
+                                                          COUNT_STAR(pairs2) AS total;
 second_edge_list = filter second_edge_list by total > 1;
 
 together = join filtered_edge_list by (ego1, ego2), second_edge_list by (ego2, ego1);
@@ -58,10 +67,10 @@ final_edge_list = foreach filtered_together generate filtered_edge_list.ego1 as 
                                                      filtered_edge_list.ego2 as target,
                                                      filtered_edge_list.total as value;
 store final_edge_list into '/tmp/edge_list.txt' using PigStorage(',');
-store final_edge_list into '/tmp/edge_list.avro' using AvroStorage();                            
+-- store final_edge_list into '/tmp/edge_list.avro' using AvroStorage();                        
 
 -- Prepare node list
-nodes = foreach edge_list generate ego1 as sender, total as total, ego2 as recipient;
+nodes = foreach filtered_edge_list generate ego1 as sender, total as total, ego2 as recipient;
 sent_totals = foreach (group nodes by sender) generate group as sender, 
                                                        SUM(nodes.total) as total_sent;
 rcvd_totals = foreach (group nodes by recipient) generate group as recipient,
@@ -75,5 +84,5 @@ node_list = foreach sent_rcvd generate sender as address,
    Single email connections overwhelm visualization otherwise. */
 node_list = filter node_list by total_sent >= 1 and total_rcvd >= 1;
 
-store node_list into '/tmp/node_list.txt' using PigStorage(',');
-store node_list into '/tmp/node_list.avro' using AvroStorage();
+store node_list into '/tmp/node_list.txt' using PigStorage();
+-- store node_list into '/tmp/node_list.avro' using AvroStorage();

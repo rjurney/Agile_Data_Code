@@ -13,3 +13,16 @@ def fill_in_blanks(sent_dist):
       out_data.append(tuple([hour, 0]))
   return out_data
 
+@outputSchema("token:chararray")
+def lower(token):
+  return token.lower()
+
+import re
+
+@outputSchema("token:chararray")
+def remove_punctuation(token):
+  punctuation = re.compile(r'[-.@&$#`\'?!,></\\":;()|]')
+  words = list()
+  word = punctuation.sub("", token)
+  if word != "":
+    return word
