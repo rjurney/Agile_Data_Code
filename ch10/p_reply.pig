@@ -12,14 +12,12 @@ REGISTER /me/Software/mongo-hadoop/pig/target/mongo-hadoop-pig-1.1.0-SNAPSHOT.ja
 
 DEFINE MongoStorage com.mongodb.hadoop.pig.MongoStorage();
 
-set default_parallel 10
+set default_parallel 20
 set mapred.map.tasks.speculative.execution false
 set mapred.reduce.tasks.speculative.execution false
 
 register 'udfs.py' using jython as funcs;
 
-rmf /tmp/sent_counts.txt
-rmf /tmp/p_reply_given_from.txt
-rmf /tmp/p_reply_given_to.txt
+rmf /tmp/smooth_distributions.avro
 
 emails = load '/me/Data/test_mbox' using AvroStorage();

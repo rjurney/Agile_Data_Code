@@ -1,0 +1,164 @@
+<!-- Extend our site layout -->
+{% extends "layout.html" %}
+
+<!-- Include our common macro set -->
+{% import "macros.jnj" as common %}
+
+<!-- Link to another message ID -->
+{% macro display_in_reply_to(key, name) %}
+  {% if email[key] != 'None' -%}
+    <div class="row">
+      {{ common.display_label(name)|safe }}
+      {{ common.display_link(email[key], '/email', email[key])|safe }}
+    </div>
+  {% endif -%}
+{% endmacro -%}
+
+<!-- Convert the carriage returns in a message body to HTML endlines -->
+{% macro convert_body(body) -%}
+  {{ body.replace('\r\n', '<br />')|safe }}
+{% endmacro -%}
+
+<!-- Display the email body -->
+{% macro display_email_body(record) -%}
+  {% if(record['body']) -%}
+  <div class="row">
+    <div class="span" style="display: inline-block; margin-top: 17px; background-color: #F7F7F7; padding: 10px;">
+      {{ convert_body(record['body']) }}
+    </div>
+  </div>
+  {% endif -%}
+{% endmacro -%}
+
+<!-- Block in which content appears in superclass - layout.html -->
+{% block content -%}
+  <p class="lead">Email ID: {{email['message_id']}}</p>
+  <div class="row">
+    <div class="span6">
+      {{ common.display_email_addresses('From', email['from'])|safe }}
+      {{ common.display_email_addresses('To', email['tos'])|safe }}
+      {{ common.display_email_addresses('Cc', email['ccs'])|safe }}
+      {{ common.display_email_addresses('Bcc', email['bccs'])|safe }}
+      {{ common.display_email_addresses('Reply-To', email['reply_tos'])|safe }}
+  
+      {{ display_in_reply_to('in_reply_to', 'In-Reply-To') }}
+      {{ common.display_field(email['date'], 'Date')|safe }}
+      {{ common.display_field(email['subject'], 'Subject')|safe }}
+  
+      {{ display_email_body(email) }}
+    </div>
+      <div class="span4">
+        {% if topics -%}
+          <h3 style="margin-bottom: 5px;">Topics</h2>
+          <ul class="nav nav-pills">
+            {% for item in topics['topics'] -%}
+            <li class="active">
+              <a style="margin: 3px;" href="/topic/{{ item['word'] }}">{{ item['word'] }}</a>
+            </li>
+            {% endfor -%}
+          </ul>
+        {% endif -%}
+        {% if addresses -%}
+          <h3 style="margin-bottom: 5px;">Email Addresses</h2>
+          <ul class="nav nav-pills">
+            {% for item in addresses -%}
+            <li class="active">
+              <a style="margin: 3px;" href="/address/{{ item['address'] }}">{{ item['address'] }}</a>
+            </li>
+            {% endfor -%}
+          </ul>
+        {% endif -%}
+        {% if sent_distribution -%}
+          <h3 style="margin-bottom: 5px;">Emails Sent by Hour</h2>
+          <h5>{{ email['from']['address'] }}</h5>
+          <div id="chart">
+            <svg></svg>
+            sssafafafa
+          </div>
+          <script>
+          // Get "00" - "23"
+          function makeHourRange(num) {
+            return num < 10 ? "0" + num.toString() : num.toString();
+          }
+
+          function fillBlanks(rawData) {
+            var hourRange = d3.range(0,24);
+            var ourData = Array();
+            for (hour in hourRange)
+            {
+              var hourString = makeHourRange(hour);
+              var found = false;
+              for(x in rawData)
+              {
+                if(rawData[x]['sent_hour'] == hourString)
+                {
+                  found = true;
+                  break;
+                }
+              }
+              if(found == true)
+              {
+                ourData.push(rawData[x]);
+              }
+              else
+              {
+                ourData.push({'sent_hour': hourString, 'total': 0})
+              }
+            }
+            return ourData;
+          }
+
+          var rawData = {{ chart_json|safe }};
+          var filledData = fillBlanks(rawData);
+
+          var myColor = function() { return '#08C'; }
+          var data = [{"key": "Test Chart", "values": filledData}]; //{{ chart_json|safe }}}];
+          
+          nv.addGraph(function() {
+           var chart = nv.models.discreteBarChart()
+               .x(function(d) { return d.sent_hour })
+               .y(function(d) { return d.total })
+               .staggerLabels(true)
+               .tooltips(false)
+               .showValues(false)
+               .color(myColor)
+               .width(350)
+               .height(300)
+
+           d3.select('#chart svg')
+               .datum(data)
+             .transition().duration(500)
+               .call(chart);
+
+           nv.utils.windowResize(chart.update);
+
+           return chart;
+          });
+
+          </script>
+        {% endif -%}
+      </div>
+    {% if sent_distribution -%}
+      <div class="span2">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <th>Hour</th>
+            <th>Total Sent</th>
+          </thead>
+          <tbody>
+            {% for item in sent_distribution['sent_distribution'] %}
+            <tr style="white-space:nowrap;">
+              <td>{{ item['sent_hour'] }}</td>
+              <td style="white-space:nowrap;">{{ item['total'] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="row">
+    </div>
+    {% endif -%}
+    </div>
+  </div>
+{% endblock -%}

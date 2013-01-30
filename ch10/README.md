@@ -20,9 +20,13 @@ Most of this chapter will involve running our Python/Flask web application.
 python web/index.py
 ```
 
+## Smooth Email Sent Time Distributions ##
+
+See previous - start the web app, the fix is applied to 'web/index.py'.
+
 ## Calculate Reply Probability ##
 
-To calculate , run:
+To calculate, run:
 
 ```
 pig -l /tmp -x local -v -w related_email_addresses.pig
