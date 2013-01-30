@@ -12,13 +12,11 @@ REGISTER /me/Software/mongo-hadoop/pig/target/mongo-hadoop-pig-1.1.0-SNAPSHOT.ja
 
 DEFINE MongoStorage com.mongodb.hadoop.pig.MongoStorage();
 
-set default_parallel 20
+set default_parallel 10
 set mapred.map.tasks.speculative.execution false
 set mapred.reduce.tasks.speculative.execution false
 
-register 'udfs.py' using jython as funcs;
-
-rmf /tmp/sent_counts.avro
+rmf /tmp/sent_counts.txt
 rmf /tmp/smooth_distributions.avro
 
 -- Count both from addresses and reply_to addresses as 

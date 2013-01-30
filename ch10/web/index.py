@@ -20,17 +20,55 @@ topics_per_email = db['topics_per_email']
 # Setup ElasticSearch
 elastic = pyelasticsearch.ElasticSearch(config.ELASTIC_URL)
 
+import numpy as np
+
+class Smoother():
+  
+  """Takes an array of objects as input, and the data key of the object for access."""
+  def __init__(self, raw_data, data_key):
+    self.raw_data = raw_data
+    print self.raw_data
+    self.data = self.to_array(raw_data, data_key)
+  
+  """Given an array of objects with values, return a numpy array of values."""
+  def to_array(self, in_data, data_key):
+    data_array = list()
+    for datum in in_data:
+      print datum
+      data_array.append(datum[data_key])
+    return np.array(data_array)
+  
+  """Smoothing method from SciPy SignalSmooth Cookbook: http://www.scipy.org/Cookbook/SignalSmooth"""
+  def smooth(self, window_len=10, window='blackman'):
+    x = self.data
+    s=np.r_[2*x[0]-x[window_len:1:-1], x, 2*x[-1]-x[-1:-window_len:-1]]
+    w = getattr(np, window)(window_len)
+    y = np.convolve(w/w.sum(), s, mode='same')
+    self.smoothed = y[window_len-1:-window_len+1]
+  
+  def to_objects(self):
+    objects = list()
+    hours = [ '%02d' % i for i in range(24) ]
+    for idx, val in enumerate(hours):
+      objects.append({"sent_hour": val, "total": round(max(self.smoothed[idx],0), 0)})
+    return objects
+
 # Controller: Fetch an email and display it
 @app.route("/email/<message_id>")
 def email(message_id):
   email = emails.find_one({'message_id': message_id})
   address_hash = addresses_per_email.find_one({'message_id': message_id})
-  sent_dist_records = sent_distributions.find_one({'address': email['from']['address']})
+  sent_dist = sent_distributions.find_one({'address': email['from']['address']})
+  
+  smitty = Smoother(sent_dist['sent_distribution'], 'total')
+  smitty.smooth()
+  smoothed_dist = smitty.to_objects()
+  
   topics = topics_per_email.find_one({'message_id': message_id})
   return render_template('partials/email.html', email=email, 
                                                 addresses=address_hash['addresses'], 
-                                                chart_json=json.dumps(sent_dist_records['sent_distribution']), 
-                                                sent_distribution=sent_dist_records,
+                                                chart_json=json.dumps(smoothed_dist), 
+                                                sent_distribution=smoothed_dist,
                                                 topics=topics)
   
 # Calculate email offsets for fetchig lists of emails from MongoDB
