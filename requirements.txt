@@ -17,4 +17,3 @@ numpy
 scipy
 scikits.learn
 matplotlib
-igraph

@@ -15,7 +15,7 @@ DEFINE StanfordTokenize varaha.text.StanfordTokenize();
 REGISTER /me/Software/datafu/dist/datafu-0.0.9-SNAPSHOT.jar
 REGISTER /me/Software/datafu/lib/*.jar /* */
 
-DEFINE Quantile datafu.pig.stats.Quantile('0.21','0.90');
+DEFINE Quantile datafu.pig.stats.Quantile('0.21','1.0');
 
 set default_parallel 5
 set mapred.map.tasks.speculative.execution false
@@ -45,7 +45,8 @@ token_filter = filter with_quantiles by token_counts::total > quantiles::low_fil
                                      and SIZE(token_counts::token) > 2;
 
 filtered_tokens = join token_records_a by token, token_filter by token;
-trimmed_tokens = foreach filtered_tokens generate token_records_a::message_id as message_id, funcs.remove_punctuation(token_records_a::token) as token;
+trimmed_tokens = foreach filtered_tokens generate token_records_a::message_id as message_id, 
+                                                  funcs.remove_punctuation(token_records_a::token) as token;
 trimmed_tokens = filter trimmed_tokens by token is not null and token != '' and SIZE(token) > 2;
 
 store trimmed_tokens into '/tmp/trimmed_tokens.txt';

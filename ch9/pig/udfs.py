@@ -17,11 +17,30 @@ def fill_in_blanks(sent_dist):
 def lower(token):
   return token.lower()
 
-import re
+import re, sys
 
 @outputSchema("token:chararray")
 def remove_punctuation(token):
-  punctuation = re.compile(r'[-.@&$#`\'?!,></\\":;()|]')
-  words = list()
-  word = punctuation.sub("", token)
+  word = re.sub(r'([^\w\s]|_)+(?=\s|$)', '', token)
+  #punctuation = re.compile(r'[-.@&$#`\'?!,></\\":;()|]')
+  #words = list()
+  #word = punctuation.sub('', token, count=sys.maxint)
   return word
+
+import operator
+
+def _dotProduct(vector1, vector2):
+  if len(vector1) != len(vector2):
+    exit(-1);
+  dotProduct = 0
+  for i in range(0, len(vector1)):
+    dotProduct += vector1[i][0] * vector2[i][0]
+  return dotProduct
+
+@outputSchema("t:tuple(topic1:chararray, topic2:chararray, cosine_similarity:double)") 
+def cosineSimilarity(topic1, vector1, topic2, vector2):
+  numerator = _dotProduct(vector1, vector2)
+  denominator = _dotProduct(vector1, vector1) * _dotProduct(vector2, vector2)
+  result = numerator / denominator
+  outTuple = (topic1, topic2, result)
+  return outTuple
