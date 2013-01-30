@@ -17,9 +17,7 @@ REGISTER /me/Software/datafu/lib/*.jar /* */
 
 DEFINE Quantile datafu.pig.stats.Quantile('0.21','1.0');
 
-set default_parallel 5
-set mapred.map.tasks.speculative.execution false
-set mapred.reduce.tasks.speculative.execution false
+set default_parallel 20
 
 rmf /tmp/tf_idf_scores.txt
 rmf /tmp/trimmed_tokens.txt
