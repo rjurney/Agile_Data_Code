@@ -21,11 +21,11 @@ import re, sys
 
 @outputSchema("token:chararray")
 def remove_punctuation(token):
-  word = re.sub(r'([^\w\s]|_)+(?=\s|$)', '', token)
+  #word = re.sub(r'([^\w\s]|_)+(?=\s|$)', '', token)
   #punctuation = re.compile(r'[-.@&$#`\'?!,></\\":;()|]')
   #words = list()
   #word = punctuation.sub('', token, count=sys.maxint)
-  return word
+  return token
 
 import operator
 
