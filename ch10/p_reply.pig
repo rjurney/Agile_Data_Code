@@ -18,6 +18,17 @@ set mapred.reduce.tasks.speculative.execution false
 
 register 'udfs.py' using jython as funcs;
 
+rmf /tmp/sent_counts.avro
 rmf /tmp/smooth_distributions.avro
 
+-- Count both from addresses and reply_to addresses as 
 emails = load '/me/Data/test_mbox' using AvroStorage();
+split emails into has_reply_to if (reply_tos is not null), froms if (reply_tos is null);
+
+-- Cast reply_to addresses as new from addresses and union back our from/reply_tos
+reply_tos_trimmed = foreach has_reply_to generate flatten(reply_tos.address) as from, flatten(tos.address) as to;
+froms_trimmed = foreach froms generate from.address as from, flatten(tos.address) as to;
+sent_mails = union reply_tos_trimmed, froms_trimmed;
+
+sent_counts = foreach (group sent_mails by (from, to)) generate flatten(group) as (from, to), COUNT_STAR(sent_mails) as total;
+store sent_counts into '/tmp/sent_counts.txt';
