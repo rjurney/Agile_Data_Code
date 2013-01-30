@@ -24,5 +24,4 @@ def remove_punctuation(token):
   punctuation = re.compile(r'[-.@&$#`\'?!,></\\":;()|]')
   words = list()
   word = punctuation.sub("", token)
-  if word != "":
-    return word
+  return word

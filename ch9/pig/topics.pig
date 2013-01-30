@@ -46,11 +46,11 @@ token_filter = filter with_quantiles by token_counts::total > quantiles::low_fil
 
 filtered_tokens = join token_records_a by token, token_filter by token;
 trimmed_tokens = foreach filtered_tokens generate token_records_a::message_id as message_id, funcs.remove_punctuation(token_records_a::token) as token;
-trimmed_tokens = filter trimmed_tokens by token is not null and SIZE(token) > 2;
+trimmed_tokens = filter trimmed_tokens by token is not null and token != '' and SIZE(token) > 2;
 
 store trimmed_tokens into '/tmp/trimmed_tokens.txt';
 
 tf_idf_scores = tf_idf(trimmed_tokens, 'message_id', 'token');
-tf_idf_scores = filter tf_idf_scores by score > 0.11 and SIZE(token) > 2;
+tf_idf_scores = filter tf_idf_scores by score > 0.11 and token IS NOT NULL and token != '' and SIZE(token) > 2;
 
 store tf_idf_scores into '/tmp/tf_idf_scores.txt';
