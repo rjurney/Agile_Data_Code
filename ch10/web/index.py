@@ -93,6 +93,7 @@ def address(address, offset1=0, offset2=config.EMAILS_PER_ADDRESS_PAGE):
   chart_json = json.dumps(sent_dist['sent_distribution'])
   addresses = related_addresses.find_one({'address': address})['related_addresses']
   sent_dist_records = sent_distributions.find_one({'address': address})
+  reply_ratio = db.reply_ratios.find_one({'from': config.MY_EMAIL, 'to': address})
   return render_template('partials/address.html', 
                          emails=emails, 
                          nav_offsets=nav_offsets, 
@@ -100,7 +101,8 @@ def address(address, offset1=0, offset2=config.EMAILS_PER_ADDRESS_PAGE):
                          sent_distribution=sent_dist['sent_distribution'],
                          addresses=addresses,
                          chart_json=chart_json,
-                         address='<' + address + '>'
+                         address='<' + address + '>',
+                         reply_ratio=reply_ratio
                          )
 
 if __name__ == "__main__":

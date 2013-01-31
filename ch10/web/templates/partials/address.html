@@ -29,6 +29,12 @@
       {{ common.display_nav(nav_offsets, nav_path, query)|safe }}
     {% endif -%}
       </div>
+      {% if reply_ratio -%}
+        <div class="span4">
+          <h3>Probability of Reply</h3>
+          <p style="white-space:nowrap;">{{ reply_ratio['from']}} &nbsp;->&nbsp; {{ reply_ratio['to']}}: &nbsp; {{ reply_ratio['ratio']|round(2) }}</p>
+        </div>
+      {% endif -%}
   </div>
   <div class="span4">
   {% if sent_distribution -%}
