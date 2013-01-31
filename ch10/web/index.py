@@ -66,11 +66,8 @@ def list_emails(offset1 = 0, offset2 = config.EMAILS_PER_LIST_PAGE, query=None):
   if query==None:
     email_list = emails.find()[offset1:offset2]
   else:
-    results = elastic.search({'query': 
-                              {'match': 
-                                { '_all': query}}, 
-                              'sort': 
-                                {'date': {'order': 'desc'}}, 
+    results = elastic.search({'query': {'match': { '_all': query}}, 
+                              'sort': {'date': {'order': 'desc'}}, 
                               'from': offset1, 
                               'size': config.EMAILS_PER_LIST_PAGE}, 
                               index="emails")
