@@ -21,18 +21,21 @@ topics_per_email = db['topics_per_email']
 # Setup ElasticSearch
 elastic = pyelasticsearch.ElasticSearch(config.ELASTIC_URL)
 
+# Model helper
+def get_smoothed_sent_dist(address):
+  sent_dist = sent_distributions.find_one({'address': address})
+  smitty = Smoother(sent_dist['sent_distribution'], 'total')
+  smitty.smooth()
+  smoothed_dist = smitty.to_objects()
+  return smoothed_dist
+
 # Controller: Fetch an email and display it
 @app.route("/email/<message_id>")
 def email(message_id):
   email = emails.find_one({'message_id': message_id})
-  address_hash = addresses_per_email.find_one({'message_id': message_id})
-  sent_dist = sent_distributions.find_one({'address': email['from']['address']})
-  
-  smitty = Smoother(sent_dist['sent_distribution'], 'total')
-  smitty.smooth()
-  smoothed_dist = smitty.to_objects()
-  chart_json = json.dumps(smoothed_dist)
-  
+  address_hash = addresses_per_email.find_one({'message_id': message_id})  
+  smoothed_dist = get_smoothed_sent_dist(email['from']['address'])
+  chart_json = json.dumps(smoothed_dist)  
   topics = topics_per_email.find_one({'message_id': message_id})
   return render_template('partials/email.html', email=email, 
                                                 addresses=address_hash['addresses'], 
@@ -89,16 +92,15 @@ def address(address, offset1=0, offset2=config.EMAILS_PER_ADDRESS_PAGE):
   address = address.lower() # In case the email record linking to this isn't lowered... consider ETL on base document in Pig
   emails = emails_per_address.find_one({'address': address})['emails'][offset1:offset2]
   nav_offsets = get_navigation_offsets(offset1, offset2, config.EMAILS_PER_ADDRESS_PAGE)
-  sent_dist = sent_distributions.find_one({'address': address})
-  chart_json = json.dumps(sent_dist['sent_distribution'])
   addresses = related_addresses.find_one({'address': address})['related_addresses']
-  sent_dist_records = sent_distributions.find_one({'address': address})
+  smoothed_dist = get_smoothed_sent_dist(address)
+  chart_json = json.dumps(smoothed_dist)
   reply_ratio = db.reply_ratios.find_one({'from': config.MY_EMAIL, 'to': address})
   return render_template('partials/address.html', 
                          emails=emails, 
                          nav_offsets=nav_offsets, 
                          nav_path='/address/' + address + '/', 
-                         sent_distribution=sent_dist['sent_distribution'],
+                         sent_distribution=smoothed_dist,
                          addresses=addresses,
                          chart_json=chart_json,
                          address='<' + address + '>',
