@@ -73,16 +73,15 @@ message_vector_per_topic = foreach (group topic_vector by topic) {
   sorted = order topic_vector by topic;
   generate group as topic, sorted.score as sorted_message_vector;
 }
--- store message_vector_per_topic into '/tmp/message_vector_per_topic.txt';
--- second_vector_per_topic = LOAD '/tmp/message_vector_per_topic.txt' as (topic:chararray, sorted_message_vector:bag{vector:tuple(score:double)});
--- second_vector_per_topic = message_vector_per_topic;
--- compare_topics = CROSS message_vector_per_topic, second_vector_per_topic;
--- store compare_topics into '/tmp/compare_topics.txt';
-/*cosine_similarities = foreach compare_topics generate funcs.cosineSimilarity(message_vector_per_topic::topic, 
+store message_vector_per_topic into '/tmp/message_vector_per_topic.txt';
+second_vector_per_topic = LOAD '/tmp/message_vector_per_topic.txt' as (topic:chararray, sorted_message_vector:bag{vector:tuple(score:double)});
+compare_topics = CROSS message_vector_per_topic, second_vector_per_topic;
+store compare_topics into '/tmp/compare_topics.txt';
+cosine_similarities = foreach compare_topics generate funcs.cosineSimilarity(message_vector_per_topic::topic, 
                                                                              message_vector_per_topic::sorted_message_vector, 
                                                                              second_vector_per_topic::topic,
                                                                              second_vector_per_topic::sorted_message_vector);
-*/-- store cosine_similarities into '/tmp/cosine_similarities.txt';
+store cosine_similarities into '/tmp/cosine_similarities.txt';
 
 /*related_topics = foreach (group cosine_similarities by topic1) {
   sorted = order cosine_similarities by score;

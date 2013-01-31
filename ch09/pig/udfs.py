@@ -30,11 +30,15 @@ def remove_punctuation(token):
 import operator
 
 def _dotProduct(vector1, vector2):
-  if len(vector1) != len(vector2):
-    exit(-1);
   dotProduct = 0
   for i in range(0, len(vector1)):
-    dotProduct += vector1[i][0] * vector2[i][0]
+    p = 0
+    if vector1[i][0] != None:
+      p = vector1[i][0]
+    q = 0
+    if vector2[i][0] != None:
+      q = vector2[i][0]
+    dotProduct += p * q
   return dotProduct
 
 @outputSchema("t:tuple(topic1:chararray, topic2:chararray, cosine_similarity:double)") 

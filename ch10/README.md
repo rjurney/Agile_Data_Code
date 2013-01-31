@@ -29,7 +29,7 @@ See previous - start the web app, the fix is applied to 'web/index.py'.
 To calculate, run:
 
 ```
-pig -l /tmp -x local -v -w related_email_addresses.pig
+pig -l /tmp -x local -v -w p_reply.pig
 ```
 
 This will create a mongodb store: 'mongodb://localhost/agile_data.related_addresses'
