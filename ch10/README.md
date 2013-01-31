@@ -40,7 +40,7 @@ Run 'mongo.js', or in the mongo terminal:
 
 ```
 mongo agile_data
-db.p_reply_given_from.ensureIndex({address: 1});
-db.p_reply_given_from.findOne();
+db.reply_ratios.ensureIndex({from: 1, to: 1});
+db.reply_ratios.findOne();
 ```
 
