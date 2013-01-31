@@ -55,24 +55,24 @@ cd gmail
 Chapter 7: Collecting and Displaying Atomic Records
 ===================================================
 
-[Chapter 7](https://github.com/rjurney/Agile_Data_Code/tree/master/ch07) tutorial.
+[Chapter 7 tutorial](https://github.com/rjurney/Agile_Data_Code/tree/master/ch07)
 
 Chapter 8: Creating Charts
 ==========================
 
-[Chapter 8](https://github.com/rjurney/Agile_Data_Code/tree/master/ch08) tutorial.
+[Chapter 8 tutorial](https://github.com/rjurney/Agile_Data_Code/tree/master/ch08)
 
 Chapter 9: Building Interactive Reports
 =======================================
 
-[Chapter 9](https://github.com/rjurney/Agile_Data_Code/tree/master/ch09) tutorial.
+[Chapter 9 tutorial](https://github.com/rjurney/Agile_Data_Code/tree/master/ch09)
 
 Chapter 10: Making Predictions
 ==============================
 
-[Chapter 10](https://github.com/rjurney/Agile_Data_Code/tree/master/ch10) tutorial.
+[Chapter 10 tutorial](https://github.com/rjurney/Agile_Data_Code/tree/master/ch10)
 
 Chapter 11: Driving Actions
 ===========================
 
-[Chapter 11](https://github.com/rjurney/Agile_Data_Code/tree/master/ch11) tutorial.
+[Chapter 11 tutorial](https://github.com/rjurney/Agile_Data_Code/tree/master/ch11)
