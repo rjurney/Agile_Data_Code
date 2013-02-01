@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# derived from example at http://www.harshj.com/2010/04/25/writing-and-reading-avro-data-files-using-python/
+# derived from helpful example at http://www.harshj.com/2010/04/25/writing-and-reading-avro-data-files-using-python/
 #
 from avro import schema, datafile, io
 import pprint
