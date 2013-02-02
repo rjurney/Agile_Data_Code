@@ -28,4 +28,4 @@ STORE sent_count_json INTO 'es://inbox/sentcounts?json=true&size=1000' USING com
   '/me/Software/elasticsearch-0.20.2/plugins');
 
 /* Search for Hadoop to make sure we get a hit in our sent_count index */
-sh curl -XGET 'http://localhost:9200/inbox/sentcounts/_search?q=russ&pretty=true&size=1'
+sh curl -XGET 'http://localhost:9200/inbox/sentcounts/_search?q=russell&pretty=true&size=1'

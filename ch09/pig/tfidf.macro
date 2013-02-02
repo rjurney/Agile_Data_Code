@@ -9,16 +9,18 @@ DEFINE tf_idf(token_records, id_field, token_field) RETURNS out_relation {
   pre_term_counts = foreach (group doc_word_totals by $id_field) generate
     group AS $id_field,
     FLATTEN(doc_word_totals.(token, doc_total)) as (token, doc_total), 
-    SUM(doc_word_totals.doc_total) as doc_size;
+    SUM(doc_word_totals.doc_total) as doc_size,
+    MAX(doc_word_totals.doc_total) as max_freq;
  
   /* Calculate the TF */
-  term_freqs = foreach pre_term_counts generate $id_field as $id_field,
+  term_freqs = foreach pre_term_counts generate 
+    $id_field as $id_field,
     token as token,
-    ((double)doc_total / (double)doc_size) AS term_freq;
- 
+    ((double)doc_total / (double)doc_size / (double) max_freq) AS term_freq;
+  
   /* Get count of documents using each token, for idf */
   token_usages = foreach (group term_freqs by token) generate
-    FLATTEN(term_freqs) as ($id_field, token, term_freq),
+    FLATTEN(term_freqs) as ($id_field:chararray, token:chararray, term_freq:double),
     COUNT_STAR(term_freqs) as num_docs_with_token;
  
   /* Get document count */

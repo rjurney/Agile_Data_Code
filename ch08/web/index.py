@@ -22,11 +22,10 @@ elastic = pyelasticsearch.ElasticSearch(config.ELASTIC_URL)
 @app.route("/email/<message_id>")
 def email(message_id):
   email = emails.find_one({'message_id': message_id})
-  address_hash = addresses_per_email.find_one({'message_id': message_id})
+  addresses = addresses_per_email.find_one({'message_id': message_id})
   sent_dist_records = sent_distributions.find_one({'address': email['from']['address']})
-  print sent_dist_records
   return render_template('partials/email.html', email=email, 
-                                                addresses=address_hash['addresses'], 
+                                                addresses=addresses['addresses'], 
                                                 chart_json=json.dumps(sent_dist_records['sent_distribution']), 
                                                 sent_distribution=sent_dist_records)
   
@@ -68,7 +67,7 @@ def address(address):
   sent_dist_hash = sent_distributions.find_one({'address': address})
   return render_template('partials/address.html', emails=emails['emails'], sent_distribution=sent_dist_hash['sent_distribution'])
 
-# Display sent distributions for a give email
+# Display sent distributions for a give email address
 @app.route('/sent_distribution/<string:sender>')
 def sent_distribution(sender):
   sent_dist_records = sent_distributions.find_one({'address': sender})

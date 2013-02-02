@@ -15,7 +15,7 @@ DEFINE StanfordTokenize varaha.text.StanfordTokenize();
 REGISTER /me/Software/datafu/dist/datafu-0.0.9-SNAPSHOT.jar
 REGISTER /me/Software/datafu/lib/*.jar /* */
 
-DEFINE Quantile datafu.pig.stats.Quantile('0.21','1.0');
+DEFINE Quantile datafu.pig.stats.Quantile('0.11','1.0');
 
 set default_parallel 20
 
@@ -50,6 +50,6 @@ trimmed_tokens = filter trimmed_tokens by token is not null and token != '' and 
 store trimmed_tokens into '/tmp/trimmed_tokens.txt';
 
 tf_idf_scores = tf_idf(trimmed_tokens, 'message_id', 'token');
-tf_idf_scores = filter tf_idf_scores by score > 0.11 and token IS NOT NULL and token != '' and SIZE(token) > 2;
+tf_idf_scores = filter tf_idf_scores by score > 0.10 and token IS NOT NULL and token != '' and SIZE(token) > 2;
 
 store tf_idf_scores into '/tmp/tf_idf_scores.txt';
