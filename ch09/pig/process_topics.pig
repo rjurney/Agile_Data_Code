@@ -40,7 +40,7 @@ per_address = foreach (group topic_scores_per_address by address) {
   limited = limit sorted 10;
   generate group as address, limited.(topic, score);
 }
-store per_document into '/tmp/topics_per_address.txt';
+store per_address into '/tmp/topics_per_address.txt';
 
 /*-- Emails per Topic
 emails_per_topic = foreach (group topic_scores_per_message by topic) {
