@@ -60,7 +60,7 @@ Then run pig:
 pig -l /tmp -x local -v -w ./sent_distributions_fix.pig
 ```
 
-## Extract Topics per Email ##
+## Extract Topics per Email and per Address ##
 
 To calculate TF-IDF scores, run:
 
