@@ -25,7 +25,7 @@ rmf /tmp/cosine_similarities.txt
 rmf /tmp/related_topics.txt
 
 -- Topics Per Document
-topic_scores = LOAD '/tmp/tf_idf_scores.txt' as (message_id:chararray, topic:chararray, score:double);
+topic_scores = LOAD '/tmp/ntf_idf_scores_per_message.txt' as (message_id:chararray, topic:chararray, score:double);
 per_document = foreach (group topic_scores by message_id) {
   sorted = order topic_scores by score desc;
   limited = limit sorted 10;
@@ -71,17 +71,17 @@ topic_vector = join all_topics by topic LEFT OUTER, topic_scores by topic;
 topic_vector = foreach topic_vector generate all_topics::topic as topic, topic_scores::message_id as message_id, topic_scores::score as score;
 message_vector_per_topic = foreach (group topic_vector by topic) {
   sorted = order topic_vector by topic;
-  generate group as topic, sorted.score as sorted_message_vector;
+  generate group as topic, sorted as sorted_message_vector;
 }
-store message_vector_per_topic into '/tmp/message_vector_per_topic.txt';
+-- store message_vector_per_topic into '/tmp/message_vector_per_topic.txt';
 second_vector_per_topic = LOAD '/tmp/message_vector_per_topic.txt' as (topic:chararray, sorted_message_vector:bag{vector:tuple(score:double)});
 compare_topics = CROSS message_vector_per_topic, second_vector_per_topic;
-store compare_topics into '/tmp/compare_topics.txt';
+-- store compare_topics into '/tmp/compare_topics.txt';
 cosine_similarities = foreach compare_topics generate funcs.cosineSimilarity(message_vector_per_topic::topic, 
                                                                              message_vector_per_topic::sorted_message_vector, 
                                                                              second_vector_per_topic::topic,
                                                                              second_vector_per_topic::sorted_message_vector);
-store cosine_similarities into '/tmp/cosine_similarities.txt';
+-- store cosine_similarities into '/tmp/cosine_similarities.txt';
 
 /*related_topics = foreach (group cosine_similarities by topic1) {
   sorted = order cosine_similarities by score;

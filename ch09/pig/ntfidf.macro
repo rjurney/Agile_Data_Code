@@ -1,4 +1,4 @@
-DEFINE tf_idf(token_records, id_field, token_field) RETURNS out_relation {
+DEFINE ntf_idf(token_records, id_field, token_field) RETURNS out_relation {
    
   /* Calculate the term count per document */
   doc_word_totals = foreach (group $token_records by ($id_field, $token_field)) generate 
@@ -29,11 +29,13 @@ DEFINE tf_idf(token_records, id_field, token_field) RETURNS out_relation {
   ndocs = foreach (group just_ids all) generate COUNT_STAR(just_ids) as total_docs;
  
   /* Note the use of Pig Scalars to calculate idf */
-  $out_relation = foreach token_usages {
+  scores = foreach token_usages {
     idf    = LOG((double)ndocs.total_docs/(double)num_docs_with_token);
-    tf_idf = (double)term_freq * idf;
+    ntf_idf = (double)term_freq * idf;
     generate $id_field as $id_field,
       token as token,
-      (double)tf_idf as score:double;
+      (double)ntf_idf as score:double;
   };
+  
+  $out_relation = filter scores by token IS NOT NULL and token != '' and LENGTH(token) > 2; -- score > 0.10 and
 };
