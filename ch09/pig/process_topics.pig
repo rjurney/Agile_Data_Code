@@ -14,7 +14,7 @@ DEFINE MongoStorage com.mongodb.hadoop.pig.MongoStorage();
 
 set default_parallel 20
 
-register 'udfs.py' using jython as funcs;
+-- register 'udfs.py' using jython as funcs;
 
 rmf /tmp/topics_per_document.txt
 rmf /tmp/topics_per_address.txt
@@ -25,62 +25,54 @@ rmf /tmp/cosine_similarities.txt
 rmf /tmp/related_topics.txt
 
 -- Topics Per Document
-topic_scores = LOAD '/tmp/ntf_idf_scores_per_message.txt' as (message_id:chararray, topic:chararray, score:double);
-per_document = foreach (group topic_scores by message_id) {
-  sorted = order topic_scores by score desc;
+topic_scores_per_message = LOAD '/tmp/ntf_idf_scores_per_message.txt' as (message_id:chararray, topic:chararray, score:double);
+per_document = foreach (group topic_scores_per_message by message_id) {
+  sorted = order topic_scores_per_message by score desc;
   limited = limit sorted 10;
   generate group as message_id, limited.(topic, score);
 };
 store per_document into '/tmp/topics_per_document.txt';
 
 -- Topic Per Sender
-emails = load '/me/Data/test_mbox' using AvroStorage();
-emails = foreach emails generate message_id, from.address as address;
-
-topic_scores_emails = join emails by message_id, topic_scores by message_id;
-topic_scores_emails = foreach topic_scores_emails generate emails::message_id as message_id,
-                                                           emails::address as address, 
-                                                           topic_scores::topic as topic, 
-                                                           topic_scores::score as score;
-per_address_topic = foreach (group topic_scores_emails by (address, topic)) generate FLATTEN(group) as (address, topic), 
-                                                                                     SUM(topic_scores_emails.score) as score_total;
-per_address = foreach (group per_address_topic by address) {
-  by_score_total = order per_address_topic by score_total desc;
-  top_20 = limit by_score_total 20;
-  generate group as address, top_20.(topic, score_total) as topics;
+topic_scores_per_address = LOAD '/tmp/ntf_idf_scores_per_address.txt' as (address:chararray, topic:chararray, score:double);
+per_address = foreach (group topic_scores_per_address by address) {
+  sorted = order topic_scores_per_address by score desc;
+  limited = limit sorted 10;
+  generate group as address, limited.(topic, score);
 }
--- store per_address into '/tmp/topics_per_address.txt';
--- store per_address into 'mongodb://localhost/agile_data.topics_per_document' using MongoStorage();
+store per_document into '/tmp/topics_per_address.txt';
 
--- Emails per Topic
-emails_per_topic = foreach (group topic_scores_emails by topic) {
+/*-- Emails per Topic
+emails_per_topic = foreach (group topic_scores_per_message by topic) {
   sorted = order topic_scores_emails by score desc;
   top_20 = limit sorted 20;
-  generate group as topic, top_20.(message_id, score, address) as message_scores;
+  generate group as topic, top_20.(message_id, score) as message_scores;
 }
--- store emails_per_topic into '/tmp/emails_per_topic.txt';
+store emails_per_topic into '/tmp/emails_per_topic.txt';
 
 -- Related Topics via Cosine Similarity
-email_scores_per_topic = foreach (group topic_scores_emails by topic) generate group as topic, 
-                                                                               topic_scores_emails as message_scores;
+email_scores_per_topic = foreach (group topic_scores_per_message by topic) generate group as topic, 
+                                                                           topic_scores_per_message as message_scores;
 
 -- Get all terms for an index - cosine similarity requires feature vectors be the same
 topic_scores_all = foreach topic_scores generate topic;
 all_topics = DISTINCT topic_scores_all;
 topic_vector = join all_topics by topic LEFT OUTER, topic_scores by topic;
-topic_vector = foreach topic_vector generate all_topics::topic as topic, topic_scores::message_id as message_id, topic_scores::score as score;
+topic_vector = foreach topic_vector generate all_topics::topic as topic, 
+                                             topic_scores::message_id as message_id, 
+                                             topic_scores::score as score;
 message_vector_per_topic = foreach (group topic_vector by topic) {
   sorted = order topic_vector by topic;
   generate group as topic, sorted as sorted_message_vector;
 }
--- store message_vector_per_topic into '/tmp/message_vector_per_topic.txt';
-second_vector_per_topic = LOAD '/tmp/message_vector_per_topic.txt' as (topic:chararray, sorted_message_vector:bag{vector:tuple(score:double)});
-compare_topics = CROSS message_vector_per_topic, second_vector_per_topic;
+store message_vector_per_topic into '/tmp/message_vector_per_topic.txt';*/
+-- second_vector_per_topic = LOAD '/tmp/message_vector_per_topic.txt' as (topic:chararray, sorted_message_vector:bag{vector:tuple(score:double)});
+-- compare_topics = CROSS message_vector_per_topic, second_vector_per_topic;
 -- store compare_topics into '/tmp/compare_topics.txt';
-cosine_similarities = foreach compare_topics generate funcs.cosineSimilarity(message_vector_per_topic::topic, 
+/*cosine_similarities = foreach compare_topics generate funcs.cosineSimilarity(message_vector_per_topic::topic, 
                                                                              message_vector_per_topic::sorted_message_vector, 
                                                                              second_vector_per_topic::topic,
-                                                                             second_vector_per_topic::sorted_message_vector);
+                                                                             second_vector_per_topic::sorted_message_vector);*/
 -- store cosine_similarities into '/tmp/cosine_similarities.txt';
 
 /*related_topics = foreach (group cosine_similarities by topic1) {
