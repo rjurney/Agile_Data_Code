@@ -28,9 +28,9 @@ register 'udfs.py' using jython as funcs;
 import 'ntfidf.macro';
 
 emails = load '/me/Data/test_mbox' using AvroStorage();
-just_id_body = foreach emails generate message_id, body;
+id_body_address = foreach emails generate message_id, body, from.address as address;
 
-token_records_address = foreach just_id_body generate message_id, from.address as address, FLATTEN(TokenizeText(body)) as token;
+token_records_address = foreach id_body_address generate message_id, address, FLATTEN(TokenizeText(body)) as token;
 /*token_counts = foreach (group token_records_address by token) generate (chararray)group as token:chararray, 
                                                                 COUNT_STAR(token_records_address) as total;
 quantiles = foreach (group token_counts all) {
@@ -48,7 +48,6 @@ filtered_tokens = join token_records_address by token, token_filter by token;
 trimmed_tokens = foreach filtered_tokens generate token_records_address::message_id as message_id, 
                                                   funcs.remove_punctuation(token_records_address::token) as token;*/
 trimmed_tokens = filter token_records_address by token is not null and token != '' and LENGTH(token) > 2;
-
 store trimmed_tokens into '/tmp/trimmed_tokens.txt';
 
 ntf_idf_scores_per_message = ntf_idf(trimmed_tokens, 'message_id', 'token');
