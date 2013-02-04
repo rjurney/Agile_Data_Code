@@ -93,5 +93,3 @@ db.topics_per_document.findOne();
 //    }
 //  ]
 // }
-db.topics_per_address.ensureIndex({address: 1});
-db.topics_per_address.findOne();

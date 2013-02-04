@@ -92,17 +92,50 @@ use agile_data
 db.topics_per_email.ensureIndex({'message_id': 1});
 db.topics_per_email.findOne();
 db.topics_per_email.findOne();
+db.topics_per_email.findOne({'message_id': 'CANSvDjrA-dea9T-iZ6wJOLBP_Kqriae3FMDasU2OxO0gfzxJjg@mail.gmail.com'})
 {
-	"_id" : ObjectId("5107216e30043c976eeef513"),
-	"message_id" : "B18C58FF-6313-4EAD-B05B-EFD586579D53@hortonworks.com",
+	"_id" : ObjectId("510ef2803004df85dba4ec3a"),
+	"message_id" : "CANSvDjrA-dea9T-iZ6wJOLBP_Kqriae3FMDasU2OxO0gfzxJjg@mail.gmail.com",
 	"topics" : [
 		{
-			"word" : "PIG-3108",
-			"score" : 0.13435072789298896
+			"word" : "grass",
+			"score" : 0.31845143365191986
 		},
 		{
-			"word" : "branches",
-			"score" : 0.11281142249746937
+			"word" : "plant",
+			"score" : 0.2810330077326449
+		},
+		{
+			"word" : "rye",
+			"score" : 0.20285020154575548
+		},
+		{
+			"word" : "sack",
+			"score" : 0.19571670266698085
+		},
+		{
+			"word" : "topsoil",
+			"score" : 0.19381049907089434
+		},
+		{
+			"word" : "warms",
+			"score" : 0.19207027153110176
+		},
+		{
+			"word" : "turf",
+			"score" : 0.1889872579345566
+		},
+		{
+			"word" : "weeds",
+			"score" : 0.16849717160426886
+		},
+		{
+			"word" : "winter",
+			"score" : 0.13641124134559518
+		},
+		{
+			"word" : "dad",
+			"score" : 0.12483962902570728
 		}
 	]
 }
