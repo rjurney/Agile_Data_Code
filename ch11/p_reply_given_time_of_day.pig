@@ -18,45 +18,61 @@ set default_parallel 10
 set mapred.map.tasks.speculative.execution false
 set mapred.reduce.tasks.speculative.execution false
 
-rmf /tmp/sent_counts_by_hour.avro
-rmf /tmp/sent_by_hour_reply_ratios.avro
-rmf /tmp/reply_counts_by_hour.avro
-rmf /tmp/sent_replies.txt
-rmf /tmp/replies.txt
+rmf /tmp/hour_sent_counts.txt
+rmf /tmp/date_replies.txt
+rmf /tmp/date_reply_counts.txt
 rmf /tmp/reply_ratios_by_hour.txt
-rmf /tmp/reply_counts.txt
-rmf /tmp/sent_counts.txt
+rmf /tmp/date_filled_dist.txt
+rmf /tmp/all_ratio.txt
+
+register 'udfs.py' using jython as funcs;
 
 emails = load '/me/Data/test_mbox' using AvroStorage();
 clean_emails = filter emails by (from.address is not null) and (reply_tos is null);
 sent_emails = foreach clean_emails generate from.address as from, 
-                                            substr(tohour(date), 11, 13) as hour, 
+                                            substr(tohour(date), 11, 13) as sent_hour, 
                                             message_id;
 
-sent_counts = foreach (group sent_emails by (from, hour)) generate flatten(group) as (from, hour), 
-                                                                   COUNT_STAR(sent_emails) as total;
-store sent_counts into '/tmp/sent_counts.txt';
+sent_counts = foreach (group sent_emails by (from, sent_hour)) generate flatten(group) as (from, sent_hour), 
+                                                                        COUNT_STAR(sent_emails) as total;
+-- store sent_counts into '/tmp/hour_sent_counts.txt';
 
 replies = filter emails by (from is not null) and (reply_tos is null) and (in_reply_to is not null);
 replies = foreach replies generate from.address as from,
                                    in_reply_to;
 replies = filter replies by in_reply_to != 'None';
-store replies into '/tmp/replies.txt';
+-- store replies into '/tmp/date_replies.txt';
 
 /* Now join a copy of the emails by message id to the in_reply_to of our emails */
-replies = load '/tmp/replies.txt' as (from:chararray, to:chararray, in_reply_to:chararray);
+replies = load '/tmp/date_replies.txt' as (from:chararray, in_reply_to:chararray);
 with_reply = join sent_emails by message_id, replies by in_reply_to;
 
-trimmed_replies = foreach with_reply generate sent_emails::from as from, sent_emails::hour as hour;
-reply_counts = foreach (group trimmed_replies by (from, hour)) generate flatten(group) as (from, hour), 
-                                                                        COUNT_STAR(trimmed_replies) as total;
-store reply_counts into '/tmp/reply_counts.txt';
+trimmed_replies = foreach with_reply generate sent_emails::from as from, sent_emails::sent_hour as sent_hour;
+reply_counts = foreach (group trimmed_replies by (from, sent_hour)) generate flatten(group) as (from, sent_hour), 
+                                                                             COUNT_STAR(trimmed_replies) as total;
+-- store reply_counts into '/tmp/date_reply_counts.txt';
 
 -- Join to get replies with sent mails
-sent_replies = join sent_counts by (from, hour), reply_counts by (from, hour);
+sent_replies = join sent_counts by (from, sent_hour), reply_counts by (from, sent_hour);
+
 
 -- Calculate from/to reply ratios for each pair of from/to
 reply_ratios = foreach sent_replies generate sent_counts::from as from, 
-                                             sent_counts::hour as hour, 
-                                             (double)reply_counts::total/sent_counts::total as ratio:double;
+                                             sent_counts::sent_hour as sent_hour, 
+                                             (double)reply_counts::total / (double)sent_counts::total as ratio:double;
+reply_ratios = foreach reply_ratios generate from, sent_hour, (ratio > 1.0 ? 1.0 : ratio) as ratio;
 store reply_ratios into '/tmp/reply_ratios_by_hour.txt';
+
+by_from = group reply_ratios by from;
+per_from = foreach by_from {
+  sorted = order reply_ratios by sent_hour;
+  generate group as from,
+           sorted.(sent_hour, ratio) as sent_distribution;
+};
+filled_dist = foreach per_from generate from, funcs.fill_in_blanks(sent_distribution) as sent_distribution;
+store filled_dist into '/tmp/date_filled_dist.txt';
+
+-- All ratio by hour
+all_ratio = foreach (group sent_replies by sent_hour) generate 'overall' as key, 
+  (double)SUM(sent_replies.reply_counts::total) / (double)SUM(sent_replies.sent_counts::total) as ratio;
+store all_ratio into '/tmp/all_ratio.txt';
