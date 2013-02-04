@@ -17,9 +17,24 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Next ##
+## Load a Procfile App Locally with Honcho ##
 
+To use a Procfile to load our 'echo service' locally with Flask, run:
 
+```
+honcho start
+```
+
+You'll see:
+
+```
+$ honcho start
+11:05:15 web.1  | started with pid 18080
+11:05:16 web.1  |  * Running on http://127.0.0.1:5000/
+11:05:16 web.1  |  * Restarting with reloader
+11:05:22 web.1  | 127.0.0.1 - - [04/Feb/2013 11:05:22] "GET /eagea HTTP/1.1" 200 -
+11:05:24 web.1  | 127.0.0.1 - - [04/Feb/2013 11:05:24] "GET /favicon.ico HTTP/1.1" 200 -
+```
 
 ## Conclusion ##
 
