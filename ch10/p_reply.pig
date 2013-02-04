@@ -21,6 +21,7 @@ rmf /tmp/replies.txt
 rmf /tmp/direct_replies.txt
 rmf /tmp/reply_counts.txt
 rmf /tmp/reply_ratios.txt
+rmf /tmp/overall_replies.txt
 rmf /tmp/smooth_distributions.avro
 
 -- Count both from addresses and reply_to addresses as 
@@ -51,10 +52,22 @@ reply_counts = foreach (group trimmed_replies by (from, to)) generate flatten(gr
                                                                       COUNT_STAR(trimmed_replies) as total;
 store reply_counts into '/tmp/reply_counts.txt';
 
+-- Join to get replies with sent mails
 sent_replies = join sent_counts by (from, to), reply_counts by (from, to);
+
+-- Calculate from/to reply ratios for each pair of from/to
 reply_ratios = foreach sent_replies generate sent_counts::from as from, 
                                              sent_counts::to as to, 
                                              (double)reply_counts::total/sent_counts::total as ratio:double;
 reply_ratios = foreach reply_ratios generate from, to, (ratio > 1.0 ? 1.0 : ratio) as ratio; -- Error cleaning
 store reply_ratios into '/tmp/reply_ratios.txt';
 store reply_ratios into 'mongodb://localhost/agile_data.reply_ratios' using MongoStorage();
+
+-- Calculate the overall reply ratio - period.
+overall_replies = foreach (group sent_replies all) generate 'overall' as key:chararray, 
+                                                            SUM(sent_replies.sent_counts::total) as sent,
+                                                            SUM(sent_replies.reply_counts::total) as replies,
+                                                            (double)SUM(sent_replies.reply_counts::total)/(double)SUM(sent_replies.sent_counts::total) as reply_ratio; 
+store overall_replies into '/tmp/overall_replies.txt';
+
+
