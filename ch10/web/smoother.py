@@ -1,3 +1,5 @@
+# Based on http://www.scipy.org/Cookbook/SignalSmooth
+
 import numpy as np
 
 class Smoother():
