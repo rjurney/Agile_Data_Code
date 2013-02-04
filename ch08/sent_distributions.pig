@@ -14,7 +14,7 @@ REGISTER /me/Software/mongo-hadoop/pig/target/mongo-hadoop-pig-1.1.0-SNAPSHOT.ja
 
 DEFINE MongoStorage com.mongodb.hadoop.pig.MongoStorage();
 
-set default_parallel 5
+set default_parallel 10
 set mapred.map.tasks.speculative.execution false
 set mapred.reduce.tasks.speculative.execution false
 
