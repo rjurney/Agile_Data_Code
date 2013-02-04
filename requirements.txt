@@ -9,7 +9,10 @@ avro==1.7.1
 distribute==0.6.31
 -e git+https://github.com/rhec/pyelasticsearch.git#egg=pyelasticsearch
 pymongo==2.4.1
+python-snappy==0.4
 requests==1.0.4
 simplejson==2.6.2
 wsgiref==0.1.2
+numpy
+scipy
 honcho
