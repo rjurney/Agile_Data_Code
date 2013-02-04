@@ -33,7 +33,7 @@ per_document = foreach (group topic_scores_per_message by message_id) {
 };
 store per_document into '/tmp/topics_per_document.txt';
 
--- Topic Per Sender
+/*-- Topic Per Sender
 topic_scores_per_address = LOAD '/tmp/ntf_idf_scores_per_address.txt' as (address:chararray, topic:chararray, score:double);
 per_address = foreach (group topic_scores_per_address by address) {
   sorted = order topic_scores_per_address by score desc;
@@ -41,7 +41,7 @@ per_address = foreach (group topic_scores_per_address by address) {
   generate group as address, limited.(topic, score);
 }
 store per_address into '/tmp/topics_per_address.txt';
-
+*/
 /*-- Emails per Topic
 emails_per_topic = foreach (group topic_scores_per_message by topic) {
   sorted = order topic_scores_emails by score desc;
