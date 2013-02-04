@@ -36,6 +36,7 @@ $ honcho start
 11:05:24 web.1  | 127.0.0.1 - - [04/Feb/2013 11:05:24] "GET /favicon.ico HTTP/1.1" 200 -
 ```
 
+
 ## Conclusion ##
 
 Thats it - cloud setup is done!
