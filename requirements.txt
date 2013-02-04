@@ -13,6 +13,4 @@ python-snappy==0.4
 requests==1.0.4
 simplejson==2.6.2
 wsgiref==0.1.2
-numpy
-scipy
 honcho
