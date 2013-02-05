@@ -33,6 +33,24 @@ To calculate, run:
 pig -l /tmp -x local -v -w p_reply_given_from_to.pig
 ```
 
+This will create a mongodb store called `from_to_reply_ratios`.
+
+## Check MongODB for P(reply|from&to) ##
+
+Run mongo.js, or in the mongo terminal:
+```
+use agile_data
+db.from_to_reply_ratios.ensureIndex({from: 1, to: 1});
+db.from_to_reply_ratios.findOne();
+{
+	"_id" : ObjectId("5111653f3004769d48b77a5b"),
+	"from" : "russell.jurney@gmail.com",
+	"to" : "bumper1700@hotmail.com",
+	"ratio" : 0.5
+}
+
+```
+
 ## Calculate Reply Probability by Time of Email Sent ##
 
 To calculate and fill in empty zeros, run:
@@ -49,15 +67,30 @@ pig -l /tmp -x local -v -w smooth_times.pig
 
 Which uses `hamming.py` to and Pig streaming to smooth the email sent distribution using the Hamming distribution.
 
-This will create a mongodb store: 'mongodb://localhost/agile_data.related_addresses'
+This will create a mongodb store: 'mongodb://localhost/agile_data.hourly_from_reply_probs'
 
-## Check MongoDB for P(reply|from&to) ##
+## Check MongoDB for P(reply|from & hour) ##
 
 Run 'mongo.js', or in the mongo terminal:
 
 ```
 mongo agile_data
-db..ensureIndex({from: 1, to: 1});
-db..findOne();
+db.hourly_from_reply_probs.ensureIndex({address: 1});
+db.hourly_from_reply_probs.findOne();
+{
+	"_id" : ObjectId("5111644c3004641354d5ee5a"),
+	"address" : "russell.jurney@gmail.com",
+	"sent_distribution" : [
+		{
+			"hour" : "00",
+			"p_reply" : 0.452386044568
+		},
+		{
+			"hour" : "01",
+			"p_reply" : 0.419107010988
+		},
+    ...
+  ]
+}
 ```
 

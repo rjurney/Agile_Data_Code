@@ -65,7 +65,7 @@ filled_replies = foreach grouped_replies generate from, funcs.fill_in_blanks_lap
 -- Calculate from/to reply ratios for each pair of from/to
 flat_filled = foreach filled_replies generate from, 
                                               flatten(filled_totals) as (sent_hour, total_replies, total_sent);
-// Apply 1/24 laplacian smoothing
+-- Apply 1/24 laplacian smoothing
 reply_ratios = foreach flat_filled generate from, 
                                             sent_hour, 
                                             ((double)total_replies + 1) / ((double)total_sent + 24) as ratio;
@@ -80,6 +80,7 @@ per_from = foreach by_from {
            sorted.(sent_hour, ratio) as sent_distribution;
 };
 store per_from into '/tmp/date_filled_dist.txt';
+store per_from into '/tmp/date_filled_dist.avro' using AvroStorage();
 
 -- All ratio by hour
 all_ratio = foreach (group sent_replies by sent_counts::sent_hour) generate group as sent_hour, 

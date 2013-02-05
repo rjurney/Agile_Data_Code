@@ -61,7 +61,7 @@ reply_ratios = foreach sent_replies generate sent_counts::from as from,
                                              (double)reply_counts::total/sent_counts::total as ratio:double;
 reply_ratios = foreach reply_ratios generate from, to, (ratio > 1.0 ? 1.0 : ratio) as ratio; -- Error cleaning
 store reply_ratios into '/tmp/reply_ratios.txt';
-store reply_ratios into 'mongodb://localhost/agile_data.reply_ratios' using MongoStorage();
+store reply_ratios into 'mongodb://localhost/agile_data.from_to_reply_ratios' using MongoStorage();
 
 -- Calculate the overall reply ratio - period.
 overall_replies = foreach (group sent_replies all) generate 'overall' as key:chararray, 
@@ -69,5 +69,6 @@ overall_replies = foreach (group sent_replies all) generate 'overall' as key:cha
                                                             SUM(sent_replies.reply_counts::total) as replies,
                                                             (double)SUM(sent_replies.reply_counts::total)/(double)SUM(sent_replies.sent_counts::total) as reply_ratio; 
 store overall_replies into '/tmp/overall_replies.txt';
+
 
 
