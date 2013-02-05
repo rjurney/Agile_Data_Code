@@ -35,11 +35,19 @@ pig -l /tmp -x local -v -w p_reply_given_from_to.pig
 
 ## Calculate Reply Probability by Time of Email Sent ##
 
-To calculate, run:
+To calculate and fill in empty zeros, run:
 
 ```
 pig -l /tmp -x local -v -w p_reply_given_time_of_day.pig
 ```
+
+To smooth this data using the Hamming distribution, run:
+
+```
+pig -l /tmp -x local -v -w smooth_times.pig
+```
+
+Which uses `hamming.py` to and Pig streaming to smooth the email sent distribution using the Hamming distribution.
 
 This will create a mongodb store: 'mongodb://localhost/agile_data.related_addresses'
 

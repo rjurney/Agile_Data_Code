@@ -10,7 +10,7 @@ rmf /tmp/smoothed_sent_dists.txt
 
 time_dists_per_email = LOAD '/tmp/date_filled_dist.txt' as (address:chararray, sent_distribution:bag{t:tuple(hour:chararray, p_reply:double)});
 
-DEFINE smooth_stream `smoother.py` SHIP ('smoother.py');
+DEFINE smooth_stream `hamming.py` SHIP ('hamming.py');
 smoothed_time_dists_per_email = STREAM time_dists_per_email THROUGH smooth_stream as (address:chararray, hour:chararray, p_reply:double);
 
 answer = foreach (group smoothed_time_dists_per_email by address) {

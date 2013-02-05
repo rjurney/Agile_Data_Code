@@ -18,7 +18,7 @@ class Smoother():
     return np.array(data_array)
   
   """Smoothing method from SciPy SignalSmooth Cookbook: http://www.scipy.org/Cookbook/SignalSmooth"""
-  def smooth(self, window_len=5, window='blackman'):
+  def smooth(self, window_len=5, window='hamming'):
     x = self.data
     s=np.r_[2*x[0]-x[window_len:1:-1], x, 2*x[-1]-x[-1:-window_len:-1]]
     w = getattr(np, window)(window_len)
