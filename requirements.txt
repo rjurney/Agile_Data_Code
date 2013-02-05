@@ -7,7 +7,7 @@ Mail==2.1.0
 Werkzeug==0.8.3
 distribute==0.6.31
 python-snappy
-avro=1.7.3
+avro==1.7.3
 -e git+https://github.com/rhec/pyelasticsearch.git#egg=pyelasticsearch
 pymongo==2.4.1
 requests==1.0.4
