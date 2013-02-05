@@ -1,0 +1,120 @@
+<!-- Extend our site layout -->
+{% extends "layout.html" %}
+
+<!-- Include our common macro set -->
+{% import "macros.jnj" as common %}
+
+<!-- Parse a pig tuple being passed through in string format -->
+
+{% block content -%}
+  <p class="lead">Email Address {{ address }}</p>
+
+  <div class="row">
+    <div class="span8">
+      <table class="table table-striped table-condensed">
+        <thead>
+          <th>Subject</th>
+          <th>Date</th>
+        </thead>
+        <tbody>
+          {% for email in emails %}
+            <tr style="white-space:nowrap;">
+              <td>{{ common.display_link(email['message_id'], '/email', email['subject'])|safe }}</td>
+              <td style="white-space:nowrap;">{{ email['date'] }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% if nav_offsets and nav_path -%}
+      {{ common.display_nav(nav_offsets, nav_path, query)|safe }}
+    {% endif -%}
+      </div>
+      {% if reply_ratio -%}
+        <div class="span4">
+          <h3>Probability of Reply</h3>
+          <p style="white-space:nowrap;">{{ reply_ratio['from']}} &nbsp;->&nbsp; {{ reply_ratio['to']}}: &nbsp; {{ reply_ratio['ratio']|round(2) }}</p>
+        </div>
+      {% endif -%}
+  </div>
+  <div class="span4">
+  {% if sent_distribution -%}
+    <h3 style="margin-bottom: 5px;">Emails Sent by Hour</h2>
+    <div id="chart">
+      <svg></svg>
+    </div>
+    <script>
+    // Get "00" - "23"
+    function makeHourRange(num) {
+      return num < 10 ? "0" + num.toString() : num.toString();
+    }
+
+    function fillBlanks(rawData) {
+      var hourRange = d3.range(0,24);
+      var ourData = Array();
+      for (hour in hourRange)
+      {
+        var hourString = makeHourRange(hour);
+        var found = false;
+        for(x in rawData)
+        {
+          if(rawData[x]['sent_hour'] == hourString)
+          {
+            found = true;
+            break;
+          }
+        }
+        if(found == true)
+        {
+          ourData.push(rawData[x]);
+        }
+        else
+        {
+          ourData.push({'sent_hour': hourString, 'total': 0})
+        }
+      }
+      return ourData;
+    }
+
+    var rawData = {{ chart_json|safe }};
+    var filledData = fillBlanks(rawData);
+    
+    var myColor = function() { return '#08C'; }
+    var data = [{"key": "Test Chart", "values": filledData}]; //{{ chart_json|safe }}}];
+    nv.addGraph(function() {
+     var chart = nv.models.discreteBarChart()
+         .x(function(d) { return d.sent_hour })
+         .y(function(d) { return d.total })
+         .staggerLabels(true)
+         .tooltips(false)
+         .showValues(false)
+         .color(myColor)
+         .width(350)
+         .height(300)
+
+     d3.select('#chart svg')
+         .datum(data)
+       .transition().duration(500)
+         .call(chart);
+
+     nv.utils.windowResize(chart.update);
+
+     return chart;
+    });
+
+    </script>
+  {% endif -%}
+  </div>
+    <div class="span4">
+      {% if addresses -%}
+        <h3 style="margin-bottom: 5px;">Related Email Addresses</h2>
+        <ul class="nav nav-pills">
+          {% for item in addresses -%}
+          <li class="active">
+            <a style="margin: 3px;" href="/address/{{ item['to'] }}">{{ item['to'] }}</a>
+          </li>
+          {% endfor -%}
+        </ul>
+      {% endif -%}
+    </div>
+  </div>
+{% endblock -%}

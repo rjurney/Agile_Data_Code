@@ -1,0 +1,74 @@
+<!-- Extend our site layout -->
+{% extends "layout.html" %}
+
+<!-- Include our common macro set -->
+{% import "macros.jnj" as common %}
+
+<!-- Parse a pig tuple being passed through in string format -->
+
+{% block content -%}
+  <p class="lead">Email Sent Distributions</p>
+  <div class="row">
+    <div class="span4">
+        {% if sent_distribution -%}
+          <h3 style="margin-bottom: 5px;">Emails Sent by Hour</h2>
+          <h5>{{ sent_distribution['address'] }}</h5>
+          <div id="chart">
+            <svg></svg>
+          </div>
+          <script>
+          // Custom color function to highlight mode of the data
+          var data = [{"key": "Test Chart", "values": {{ chart_json|safe }}}];
+          var defaultColor = '#08C';
+          var modeColor = '#4CA9F5'; 
+          var maxy = d3.max(data[0]['values'], function(d) { return d.total; });
+          var myColor = function(d, i) { 
+             if(d['total'] == maxy) { return modeColor; }
+             else { return defaultColor; }
+           }
+          nv.addGraph(function() {
+          var chart = nv.models.discreteBarChart()
+             .x(function(d) { return d.sent_hour })
+             .y(function(d) { return d.total })
+             .staggerLabels(true)
+             .tooltips(false)
+             .showValues(false)
+             .color(myColor)
+             .width(350)
+             .height(300)
+
+          d3.select('#chart svg')
+             .datum(data)
+           .transition().duration(500)
+             .call(chart);
+
+          nv.utils.windowResize(chart.update);
+
+          return chart;
+          });
+          </script>
+        {% endif -%}
+      </div>
+    {% if sent_distribution -%}
+      <div class="span2">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <th>Hour</th>
+            <th>Total Sent</th>
+          </thead>
+          <tbody>
+            {% for item in sent_distribution['sent_distribution'] %}
+            <tr style="white-space:nowrap;">
+              <td>{{ item['sent_hour'] }}</td>
+              <td style="white-space:nowrap;">{{ item['total'] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="row">
+    </div>
+    {% endif -%}
+  </div>
+{% endblock -%}

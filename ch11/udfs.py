@@ -53,36 +53,37 @@ import sys, math
 
 # Adapted from http://code.activestate.com/recipes/578129-simple-linear-regression/
 @outputSchema("t:tuple(a:double, b:double)")
-def linear_regression(vector)
-  def slope(xs, ys):
-    if(len(xs) != len(ys)):
-      print "Xs and Ys must be of same length."
-      raise
-    if(len(xs) == 0):
-      print "Xs and Ys must have len > 0."
-      raise
-    
-    x_mean = float(sum(xs))/len(xs) if len(xs) > 0 else float('nan')
-    y_mean = float(sum(ys))/len(ys) if len(ys) > 0 else float('nan')
-    
-    n = float(len(xs))
-    sumX, sumY, sumXY, sumXX, sumYY = 0, 0, 0, 0, 0
-    
-    for i in range(0,len(xs)):
-      sumX  += xs[i]
-      sumY  += ys[i]
-      sumXY += xs[i] * ys[i]
-      sumXX += xs[i] * xs[i]
-      sumYY += ys[i] * ys[i]
+def linear_regression(vector):
+  return 0
+def slope(xs, ys):
+  if(len(xs) != len(ys)):
+    print "Xs and Ys must be of same length."
+    raise
+  if(len(xs) == 0):
+    print "Xs and Ys must have len > 0."
+    raise
+  
+  x_mean = float(sum(xs))/len(xs) if len(xs) > 0 else float('nan')
+  y_mean = float(sum(ys))/len(ys) if len(ys) > 0 else float('nan')
+  
+  n = float(len(xs))
+  sumX, sumY, sumXY, sumXX, sumYY = 0, 0, 0, 0, 0
+  
+  for i in range(0,len(xs)):
+    sumX  += xs[i]
+    sumY  += ys[i]
+    sumXY += xs[i] * ys[i]
+    sumXX += xs[i] * xs[i]
+    sumYY += ys[i] * ys[i]
 
-    denominator = math.sqrt((sumXX - 1/n * sumX**2)*(sumYY - 1/n * sumY**2))
-    correlation = (sumXY - 1/n * sumX * sumY)
-    correlation /= denominator
+  denominator = math.sqrt((sumXX - 1/n * sumX**2)*(sumYY - 1/n * sumY**2))
+  correlation = (sumXY - 1/n * sumX * sumY)
+  correlation /= denominator
 
-    # calculating 'a' and 'b' of y = a + b*x
-    b  = sumXY - sumX * sumY / n
-    b /= (sumXX - sumX**2 / n)
+  # calculating 'a' and 'b' of y = a + b*x
+  b  = sumXY - sumX * sumY / n
+  b /= (sumXX - sumX**2 / n)
 
-    a  = sumY - b * sumX
-    a /= n
-    return (a, b)
+  a  = sumY - b * sumX
+  a /= n
+  return (a, b)

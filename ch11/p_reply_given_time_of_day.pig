@@ -35,13 +35,13 @@ sent_emails = foreach clean_emails generate from.address as from,
 
 sent_counts = foreach (group sent_emails by (from, sent_hour)) generate flatten(group) as (from, sent_hour), 
                                                                         COUNT_STAR(sent_emails) as total;
--- store sent_counts into '/tmp/hour_sent_counts.txt';
+store sent_counts into '/tmp/hour_sent_counts.txt';
 
 replies = filter emails by (from is not null) and (reply_tos is null) and (in_reply_to is not null);
 replies = foreach replies generate from.address as from,
                                    in_reply_to;
 replies = filter replies by in_reply_to != 'None';
--- store replies into '/tmp/date_replies.txt';
+store replies into '/tmp/date_replies.txt';
 
 /* Now join a copy of the emails by message id to the in_reply_to of our emails */
 replies = load '/tmp/date_replies.txt' as (from:chararray, in_reply_to:chararray);
@@ -50,7 +50,7 @@ with_reply = join sent_emails by message_id, replies by in_reply_to;
 trimmed_replies = foreach with_reply generate sent_emails::from as from, sent_emails::sent_hour as sent_hour;
 reply_counts = foreach (group trimmed_replies by (from, sent_hour)) generate flatten(group) as (from, sent_hour), 
                                                                              COUNT_STAR(trimmed_replies) as total;
--- store reply_counts into '/tmp/date_reply_counts.txt';
+store reply_counts into '/tmp/date_reply_counts.txt';
 
 -- Join to get replies with sent mails
 sent_replies = join sent_counts by (from, sent_hour), reply_counts by (from, sent_hour);
@@ -73,6 +73,6 @@ filled_dist = foreach per_from generate from, funcs.fill_in_blanks(sent_distribu
 store filled_dist into '/tmp/date_filled_dist.txt';
 
 -- All ratio by hour
-all_ratio = foreach (group sent_replies by sent_hour) generate 'overall' as key, 
+all_ratio = foreach (group sent_replies by sent_counts::sent_hour) generate group as sent_hour, 
   (double)SUM(sent_replies.reply_counts::total) / (double)SUM(sent_replies.sent_counts::total) as ratio;
 store all_ratio into '/tmp/all_ratio.txt';
