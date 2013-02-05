@@ -1,34 +1,28 @@
+#!/usr/bin/env python
 # Based on http://www.scipy.org/Cookbook/SignalSmooth
 
 import numpy as np
+import sys, os
 
-class Smoother():
-  
-  """Given an array of objects with values, return a numpy array of values."""
-  def to_array(self, in_data, data_key):
-    data_array = list()
-    for datum in in_data:
-      data_array.append(datum[data_key])
-    self.data = np.array(data_array)
-  
-  """Smoothing method from SciPy SignalSmooth Cookbook: http://www.scipy.org/Cookbook/SignalSmooth"""
-  def smooth(self, window_len=5, window='blackman'):
-    x = self.data
-    s=np.r_[2*x[0]-x[window_len:1:-1], x, 2*x[-1]-x[-1:-window_len:-1]]
-    w = getattr(np, window)(window_len)
-    y = np.convolve(w/w.sum(), s, mode='same')
-    self.smoothed = y[window_len-1:-window_len+1]
-  
-  def to_objects(self):
-    objects = list()
-    hours = [ '%02d' % i for i in range(24) ]
-    for idx, val in enumerate(hours):
-      objects.append({"sent_hour": val, "total": round(self.smoothed[idx], 0)})
-    return objects
+def smooth(data, window_len=5, window='hamming'):
+  x = data
+  s=np.r_[2*x[0]-x[window_len:1:-1], x, 2*x[-1]-x[-1:-window_len:-1]]
+  w = getattr(np, window)(window_len)
+  y = np.convolve(w/w.sum(), s, mode='same')
+  return y[window_len-1:-window_len+1]
 
 def main():
-  smoother = Smoother.new()
-  
+  for line in sys.stdin:
+    email, hour_dist = line.split('\t')
+    vals = hour_dist[2:-3].rsplit('),(')
+    data = []
+    for val in vals:
+      hour, p_reply = val.rsplit(',')
+      data.append(float(p_reply))
+    smoothed = smooth(np.array(data)).flatten()
+    for i in range(0,len(smoothed)):
+      hour = vals[i].rsplit(',')[0]
+      print email + "\t" + hour + "\t" + str(smoothed[i])
 
 if __name__ == "__main__":
-  main()
+    main()

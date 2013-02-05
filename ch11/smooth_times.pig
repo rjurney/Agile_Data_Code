@@ -1,0 +1,21 @@
+/* Avro uses json-simple, and is in piggybank until Pig 0.12, where AvroStorage and TrevniStorage are builtins */
+REGISTER /me/Software/pig/build/ivy/lib/Pig/avro-1.5.3.jar
+REGISTER /me/Software/pig/build/ivy/lib/Pig/json-simple-1.1.jar
+REGISTER /me/Software/pig/contrib/piggybank/java/piggybank.jar
+
+DEFINE AvroStorage org.apache.pig.piggybank.storage.avro.AvroStorage();
+
+rmf /tmp/smoothed_sent_dists.avro
+rmf /tmp/smoothed_sent_dists.txt
+
+time_dists_per_email = LOAD '/tmp/date_filled_dist.txt' as (address:chararray, sent_distribution:bag{t:tuple(hour:chararray, p_reply:double)});
+
+DEFINE smooth_stream `smoother.py` SHIP ('smoother.py');
+smoothed_time_dists_per_email = STREAM time_dists_per_email THROUGH smooth_stream as (address:chararray, hour:chararray, p_reply:double);
+
+answer = foreach (group smoothed_time_dists_per_email by address) {
+  sorted = order smoothed_time_dists_per_email by hour;
+  generate group as address, sorted.(hour, p_reply) as sent_distribution;
+};
+store answer into '/tmp/smoothed_sent_dists.avro' using AvroStorage();
+store answer into '/tmp/smoothed_sent_dists.txt';
