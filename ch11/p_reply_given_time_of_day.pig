@@ -65,6 +65,7 @@ filled_replies = foreach grouped_replies generate from, funcs.fill_in_blanks_lap
 -- Calculate from/to reply ratios for each pair of from/to
 flat_filled = foreach filled_replies generate from, 
                                               flatten(filled_totals) as (sent_hour, total_replies, total_sent);
+// Apply 1/24 laplacian smoothing
 reply_ratios = foreach flat_filled generate from, 
                                             sent_hour, 
                                             ((double)total_replies + 1) / ((double)total_sent + 24) as ratio;
