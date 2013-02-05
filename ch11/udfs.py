@@ -1,6 +1,6 @@
-@outputSchema("sent_dist:bag{t:(sent_hour:chararray, total:int)}")
-def fill_in_blanks(sent_dist):
-  print sent_dist
+@outputSchema("sent_dist:bag{t:(sent_hour:chararray, total_replies:long, total_sent:long)}")
+def fill_in_blanks_laplace(sent_dist):
+  sys.stderr.write("In Data: " + str(sent_dist))
   out_data = list()
   hours = [ '%02d' % i for i in range(24) ]
   for hour in hours:
@@ -8,9 +8,10 @@ def fill_in_blanks(sent_dist):
     if entry:
       entry = entry[0]
       print entry.__class__
-      out_data.append(tuple([entry[0], entry[1]]))
+      out_data.append(tuple([entry[0], long(entry[1]), long(entry[2])]))
     else:
-      out_data.append(tuple([hour, 0]))
+      out_data.append(tuple([hour, long(0), long(0)]))
+  sys.stderr.write("Out data: " + str(out_data))
   return out_data
 
 @outputSchema("token:chararray")
@@ -18,15 +19,6 @@ def lower(token):
   return token.lower()
 
 import re, sys
-
-@outputSchema("token:chararray")
-def remove_punctuation(token):
-  #word = re.sub(r'([^\w\s]|_)+(?=\s|$)', '', token)
-  #punctuation = re.compile(r'[-.@&$#`\'?!,></\\":;()|]')
-  #words = list()
-  #word = punctuation.sub('', token, count=sys.maxint)
-  return token
-
 import operator
 
 def _dotProduct(vector1, vector2):

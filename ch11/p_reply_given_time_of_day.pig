@@ -35,31 +35,40 @@ sent_emails = foreach clean_emails generate from.address as from,
 
 sent_counts = foreach (group sent_emails by (from, sent_hour)) generate flatten(group) as (from, sent_hour), 
                                                                         COUNT_STAR(sent_emails) as total;
-store sent_counts into '/tmp/hour_sent_counts.txt';
+-- store sent_counts into '/tmp/hour_sent_counts.txt';
 
 replies = filter emails by (from is not null) and (reply_tos is null) and (in_reply_to is not null);
 replies = foreach replies generate from.address as from,
                                    in_reply_to;
 replies = filter replies by in_reply_to != 'None';
-store replies into '/tmp/date_replies.txt';
+-- store replies into '/tmp/date_replies.txt';
 
 /* Now join a copy of the emails by message id to the in_reply_to of our emails */
-replies = load '/tmp/date_replies.txt' as (from:chararray, in_reply_to:chararray);
+-- replies = load '/tmp/date_replies.txt' as (from:chararray, in_reply_to:chararray);
 with_reply = join sent_emails by message_id, replies by in_reply_to;
 
 trimmed_replies = foreach with_reply generate sent_emails::from as from, sent_emails::sent_hour as sent_hour;
 reply_counts = foreach (group trimmed_replies by (from, sent_hour)) generate flatten(group) as (from, sent_hour), 
                                                                              COUNT_STAR(trimmed_replies) as total;
-store reply_counts into '/tmp/date_reply_counts.txt';
+-- store reply_counts into '/tmp/date_reply_counts.txt';
 
 -- Join to get replies with sent mails
 sent_replies = join sent_counts by (from, sent_hour), reply_counts by (from, sent_hour);
-
+reply_totals = foreach sent_replies generate sent_counts::from as from,
+                                             sent_counts::sent_hour as sent_hour,
+                                             reply_counts::total as total_replies,
+                                             sent_counts::total as total_sent;
+grouped_replies = foreach (group reply_totals by (from)) generate flatten(group) as (from),
+                                                reply_totals.(sent_hour, total_replies, total_sent) as totals;
+filled_replies = foreach grouped_replies generate from, funcs.fill_in_blanks_laplace(totals) as filled_totals;                                                
 
 -- Calculate from/to reply ratios for each pair of from/to
-reply_ratios = foreach sent_replies generate sent_counts::from as from, 
-                                             sent_counts::sent_hour as sent_hour, 
-                                             (double)reply_counts::total / (double)sent_counts::total as ratio:double;
+flat_filled = foreach filled_replies generate from, 
+                                              flatten(filled_totals) as (sent_hour, total_replies, total_sent);
+reply_ratios = foreach flat_filled generate from, 
+                                            sent_hour, 
+                                            ((double)total_replies + 1) / ((double)total_sent + 24) as ratio;
+                                               
 reply_ratios = foreach reply_ratios generate from, sent_hour, (ratio > 1.0 ? 1.0 : ratio) as ratio;
 store reply_ratios into '/tmp/reply_ratios_by_hour.txt';
 
@@ -69,8 +78,7 @@ per_from = foreach by_from {
   generate group as from,
            sorted.(sent_hour, ratio) as sent_distribution;
 };
-filled_dist = foreach per_from generate from, funcs.fill_in_blanks(sent_distribution) as sent_distribution;
-store filled_dist into '/tmp/date_filled_dist.txt';
+store per_from into '/tmp/date_filled_dist.txt';
 
 -- All ratio by hour
 all_ratio = foreach (group sent_replies by sent_counts::sent_hour) generate group as sent_hour, 
