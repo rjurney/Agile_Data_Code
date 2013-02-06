@@ -30,27 +30,27 @@ clean_emails = filter emails by (from.address is not null) and (reply_tos is nul
 sent_emails = foreach clean_emails generate from.address as from, flatten(tos.address) as to, message_id;
 
 sent_counts = foreach (group sent_emails by (from, to)) generate flatten(group) as (from, to), COUNT_STAR(sent_emails) as total;
-store sent_counts into '/tmp/sent_counts.txt';
+-- store sent_counts into '/tmp/sent_counts.txt';
 
 replies = filter emails by (from is not null) and (reply_tos is null) and (in_reply_to is not null);
 replies = foreach replies generate from.address as from,
                                    flatten(tos.address) as to,
                                    in_reply_to;
 replies = filter replies by in_reply_to != 'None';
-store replies into '/tmp/replies.txt';
+-- store replies into '/tmp/replies.txt';
 
 /* Now join a copy of the emails by message id to the in_reply_to of our emails */
-replies = load '/tmp/replies.txt' as (from:chararray, to:chararray, in_reply_to:chararray);
+-- replies = load '/tmp/replies.txt' as (from:chararray, to:chararray, in_reply_to:chararray);
 with_reply = join sent_emails by message_id, replies by in_reply_to;
 
 /* Filter out mailing lists - only direct replies where from/to match up */
 direct_replies = filter with_reply by (sent_emails::from == replies::to) and (sent_emails::to == replies::from);
-store direct_replies into '/tmp/direct_replies.txt';
+-- store direct_replies into '/tmp/direct_replies.txt';
 
 trimmed_replies = foreach direct_replies generate sent_emails::from as from, sent_emails::to as to;
 reply_counts = foreach (group trimmed_replies by (from, to)) generate flatten(group) as (from, to), 
                                                                       COUNT_STAR(trimmed_replies) as total;
-store reply_counts into '/tmp/reply_counts.txt';
+-- store reply_counts into '/tmp/reply_counts.txt';
 
 -- Join to get replies with sent mails
 sent_replies = join sent_counts by (from, to), reply_counts by (from, to);
@@ -69,6 +69,11 @@ overall_replies = foreach (group sent_replies all) generate 'overall' as key:cha
                                                             SUM(sent_replies.reply_counts::total) as replies,
                                                             (double)SUM(sent_replies.reply_counts::total)/(double)SUM(sent_replies.sent_counts::total) as reply_ratio; 
 store overall_replies into '/tmp/overall_replies.txt';
+store overall_replies into 'mongodb://localhost/agile_data.overall_reply_ratio' using MongoStorage();
 
-
-
+sent_count_overall_replies = CROSS sent_counts, overall_replies;
+sent_count_overall_replies = foreach sent_count_overall_replies generate sent_counts::from as from,
+                                                                         sent_counts::to as to,
+                                                                         (double)sent_counts::total / (double)overall_replies::sent as p_sent;
+store sent_count_overall_replies into '/tmp/sent_count_overall_replies.txt';
+store sent_count_overall_replies into 'mongodb://localhost/agile_data.p_sent_from_to' using MongoStorage();

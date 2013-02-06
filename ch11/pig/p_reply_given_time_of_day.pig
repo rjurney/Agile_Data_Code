@@ -24,6 +24,7 @@ rmf /tmp/date_reply_counts.txt
 rmf /tmp/reply_ratios_by_hour.txt
 rmf /tmp/date_filled_dist.txt
 rmf /tmp/all_ratio.txt
+rmf /tmp/all_ratio.avro
 
 register 'udfs.py' using jython as funcs;
 
@@ -86,3 +87,4 @@ store per_from into '/tmp/date_filled_dist.avro' using AvroStorage();
 all_ratio = foreach (group sent_replies by sent_counts::sent_hour) generate group as sent_hour, 
   (double)SUM(sent_replies.reply_counts::total) / (double)SUM(sent_replies.sent_counts::total) as ratio;
 store all_ratio into '/tmp/all_ratio.txt';
+store all_ratio into '/tmp/all_ratio.avro' using AvroStorage();
