@@ -1,5 +1,5 @@
 @outputSchema("sent_dist:bag{t:(sent_hour:chararray, total_replies:long, total_sent:long)}")
-def fill_in_blanks_laplace(sent_dist):
+def fill_in_blanks(sent_dist):
   sys.stderr.write("In Data: " + str(sent_dist))
   out_data = list()
   hours = [ '%02d' % i for i in range(24) ]
@@ -11,6 +11,30 @@ def fill_in_blanks_laplace(sent_dist):
       out_data.append(tuple([entry[0], long(entry[1]), long(entry[2])]))
     else:
       out_data.append(tuple([hour, long(0), long(0)]))
+  sys.stderr.write("Out data: " + str(out_data))
+  return out_data
+
+@outputSchema("sent_dist:bag{t:(sent_hour:chararray, total:long, all_total:long)}")
+def fill_in_blanks_two(sent_dist):
+  sys.stderr.write("In Data: " + str(sent_dist))
+  out_data = list()
+  hours = [ '%02d' % i for i in range(24) ]
+  
+  all_total = long()
+  for entry in sent_dist:
+    if entry[2]:
+      if entry[2] > 0:
+        all_total = entry[2]
+        break
+  
+  for hour in hours:
+    entry = [x for x in sent_dist if x[0] == hour]
+    if entry:
+      entry = entry[0]
+      print entry.__class__
+      out_data.append(tuple([entry[0], long(entry[1]), long(entry[2])]))
+    else:
+      out_data.append(tuple([hour, long(0), all_total]))
   sys.stderr.write("Out data: " + str(out_data))
   return out_data
 

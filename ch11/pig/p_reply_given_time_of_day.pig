@@ -25,6 +25,9 @@ rmf /tmp/reply_ratios_by_hour.txt
 rmf /tmp/date_filled_dist.txt
 rmf /tmp/all_ratio.txt
 rmf /tmp/all_ratio.avro
+rmf /tmp/date_filled_dist.avro
+rmf /tmp/p_sent_hour.txt
+rmf /tmp/p_sent_hour.avro
 
 register 'udfs.py' using jython as funcs;
 
@@ -61,7 +64,8 @@ reply_totals = foreach sent_replies generate sent_counts::from as from,
                                              sent_counts::total as total_sent;
 grouped_replies = foreach (group reply_totals by (from)) generate flatten(group) as (from),
                                                 reply_totals.(sent_hour, total_replies, total_sent) as totals;
-filled_replies = foreach grouped_replies generate from, funcs.fill_in_blanks_laplace(totals) as filled_totals;                                                
+filled_replies = foreach grouped_replies generate from, 
+                                                  funcs.fill_in_blanks(totals) as filled_totals;                                                
 
 -- Calculate from/to reply ratios for each pair of from/to
 flat_filled = foreach filled_replies generate from, 
@@ -72,7 +76,7 @@ reply_ratios = foreach flat_filled generate from,
                                             ((double)total_replies + 1) / ((double)total_sent + 24) as ratio;
                                                
 reply_ratios = foreach reply_ratios generate from, sent_hour, (ratio > 1.0 ? 1.0 : ratio) as ratio;
-store reply_ratios into '/tmp/reply_ratios_by_hour.txt';
+-- store reply_ratios into '/tmp/reply_ratios_by_hour.txt';
 
 by_from = group reply_ratios by from;
 per_from = foreach by_from {
@@ -80,11 +84,26 @@ per_from = foreach by_from {
   generate group as from,
            sorted.(sent_hour, ratio) as sent_distribution;
 };
-store per_from into '/tmp/date_filled_dist.txt';
+-- store per_from into '/tmp/date_filled_dist.txt';
 store per_from into '/tmp/date_filled_dist.avro' using AvroStorage();
 
 -- All ratio by hour
-all_ratio = foreach (group sent_replies by sent_counts::sent_hour) generate group as sent_hour, 
-  (double)SUM(sent_replies.reply_counts::total) / (double)SUM(sent_replies.sent_counts::total) as ratio;
-store all_ratio into '/tmp/all_ratio.txt';
-store all_ratio into '/tmp/all_ratio.avro' using AvroStorage();
+all_ratio = foreach (group sent_counts all) generate SUM(sent_counts.total) as total_sent;
+sent_counts_with_all = CROSS all_ratio, sent_counts;
+
+p_sent_hour = foreach (group sent_counts_with_all by (from, sent_hour)) generate flatten(group) as (from, hour), 
+                                                                                 flatten(sent_counts_with_all.sent_counts::total) as total,
+                                                                                 flatten(sent_counts_with_all.all_ratio::total_sent) as all_total;
+filled_sent_hour = foreach (group p_sent_hour by (from, hour)) {
+  sorted = order p_sent_hour by hour;
+  generate flatten(group) as (from, hour), funcs.fill_in_blanks_two(sorted.(hour, total, all_total)) as filled_dist;
+};
+p_sent_hour = foreach filled_sent_hour generate from, flatten(filled_dist);                                                                        
+p_sent_hour = foreach p_sent_hour generate from, sent_hour, ((double)total + 0.1)/((double)all_total) as ratio;
+
+answer = foreach (group p_sent_hour by from) {
+  sorted = order p_sent_hour by sent_hour;
+  generate group as from, sorted.(sent_hour, ratio) as distribution;
+};
+
+store answer into '/tmp/p_sent_hour.txt';

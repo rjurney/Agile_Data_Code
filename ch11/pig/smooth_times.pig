@@ -32,6 +32,7 @@ store answer into '/tmp/smoothed_sent_dists.avro' using AvroStorage();
 store answer into '/tmp/smoothed_sent_dists.txt';
 store answer into 'mongodb://localhost/agile_data.hourly_from_reply_probs' using MongoStorage();
 
-all_hours = load '/tmp/all_ratio.avro' using AvroStorage();
-all_g = foreach (group all_hours all) {sorted = order all_hours by hour}
-smoothed_all_time_dists_per_email = STREAM all_hours THROUGH smooth_stream as (address:chararray, hour:chararray, p_reply:double);
+/*p_sent_hour = load '/tmp/p_sent_hour.txt' as (from:chararray, distribution:bag{t:tuple(sent_hour:chararray, ratio:double)});
+store p_sent_hour into 'mongodb://localhost/agile_data.p_sent_hour' using MongoStorage();
+
+*/
