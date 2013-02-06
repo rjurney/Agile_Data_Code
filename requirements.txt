@@ -16,3 +16,4 @@ wsgiref==0.1.2
 numpy
 honcho
 scipy
+dotcloud

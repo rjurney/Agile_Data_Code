@@ -1,0 +1,6 @@
+{
+    "push_branch": null, 
+    "application": "agiledatabook", 
+    "version": "0.9.4", 
+    "push_protocol": "rsync"
+}

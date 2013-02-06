@@ -1,0 +1,7 @@
+www:
+  type: python
+  systempackages:
+    - libatlas-base-dev
+    - gfortran
+    - libsnappy1
+    - libsnappy-dev
