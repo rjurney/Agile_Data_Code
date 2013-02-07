@@ -52,6 +52,10 @@ cd gmail
 ./gmail.py -m automatic -u me@gmail.com -p 'my_password_' -s ./email.avro.schema -f '[Gmail]/All Mail' -o /tmp/test_mbox 2>&1 &
 ```
 
+Chapter 4: To the Cloud!
+
+[Chapter 4 tutorial](https://github.com/rjurney/Agile_Data_Code/tree/master/ch04)
+
 Chapter 7: Collecting and Displaying Atomic Records
 ===================================================
 
