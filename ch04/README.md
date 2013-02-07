@@ -17,25 +17,27 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Load a Procfile App Locally with Honcho ##
+## Signup for DotCloud ##
 
-To use a Procfile to load our 'echo service' locally with Flask, run:
+Visit (https://www.dotcloud.com/accounts/register/)[https://www.dotcloud.com/accounts/register/] and signup. Check out the docs: (http://docs.dotcloud.com/0.9/services/python/)[http://docs.dotcloud.com/0.9/services/python/] and this doc on deploying a Flask app via wsgi: (http://flask.pocoo.org/snippets/48/)[http://flask.pocoo.org/snippets/48/]
 
-```
-honcho start
-```
-
-You'll see:
+## Install the DotCloud CLI ##
 
 ```
-$ honcho start
-11:05:15 web.1  | started with pid 18080
-11:05:16 web.1  |  * Running on http://127.0.0.1:5000/
-11:05:16 web.1  |  * Restarting with reloader
-11:05:22 web.1  | 127.0.0.1 - - [04/Feb/2013 11:05:22] "GET /eagea HTTP/1.1" 200 -
-11:05:24 web.1  | 127.0.0.1 - - [04/Feb/2013 11:05:24] "GET /favicon.ico HTTP/1.1" 200 -
+sudo pip install dotcloud
 ```
 
+## Setup the DotCloud CLI ##
+
+```
+dotcloud setup
+```
+
+## Setup ch04 to Deploy ##
+
+cd ch04/
+dotcloud create myapp
+dotcloud push myapp
 
 ## Conclusion ##
 
