@@ -5,3 +5,5 @@ www:
     - gfortran
     - libsnappy1
     - libsnappy-dev
+data:
+  type: mongodb
