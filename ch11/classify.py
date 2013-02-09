@@ -1,5 +1,4 @@
 import pymongo
-import numpy as np
 from datetime import datetime
 from flask import Flask, request
 
@@ -9,7 +8,6 @@ from_to_reply_ratios = db['from_to_reply_ratios']
 hourly_from_reply_probs = db['hourly_from_reply_probs']
 p_sent_from_to = db['p_sent_from_to']
 overall_reply_ratio = db['overall_reply_ratio']
-hourly_from_reply_probs = db['hourly_from_reply_probs']
 
 app = Flask(__name__)
 
@@ -21,7 +19,11 @@ def will_reply():
   
   hour = request.args.get('hour') or datetime.time(datetime.now()).hour
   int_hour = int(hour)
-  hour = "0" + str(int_hour) if hour < 10 else str(int_hour)
+  if int_hour < 10:
+    hour = "0" + str(int_hour)
+  else:
+    hour = str(int_hour)
+  print "HOUR: |" + str(int_hour) + "|" + hour + "|"
   
   p_from_to_reply = from_to_reply_ratios.find_one({'from': froms, 'to': to})
   numerator1 = p_from_to_reply['ratio']
