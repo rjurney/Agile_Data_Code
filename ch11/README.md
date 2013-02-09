@@ -25,7 +25,7 @@ Most of this chapter will involve running our Python/Flask web application.
 python web/index.py
 ```
 
-## Calculate Reply Probability for From/To Pairs ##
+## Calculate Reply Probability for From/To Pairs - P(reply|from&to) ##
 
 To calculate, run:
 
@@ -35,7 +35,7 @@ pig -l /tmp -x local -v -w p_reply_given_from_to.pig
 
 This will create a mongodb store called `from_to_reply_ratios`.
 
-## Check MongODB for P(reply|from&to) ##
+## Check MongODB for P(reply|from & to) ##
 
 Run mongo.js, or in the mongo terminal:
 ```
@@ -51,9 +51,9 @@ db.from_to_reply_ratios.findOne();
 
 ```
 
-## Calculate Reply Probability by Time of Email Sent ##
+## Calculate Reply Probability by Time of Email Sent- P(reply|from & hour)##
 
-To calculate and fill in empty zeros, run:
+To calculate and fill in empty zeros in the distributions, run:
 
 ```
 pig -l /tmp -x local -v -w p_reply_given_time_of_day.pig
