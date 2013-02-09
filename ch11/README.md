@@ -94,3 +94,18 @@ db.hourly_from_reply_probs.findOne();
 }
 ```
 
+## Deploy Classifier ##
+
+Run classify.py to deploy classifier web service against MongoDB probability tables:
+
+```
+python ./classify
+```
+
+To check it, enter well-known values for your own inbox as query parameters to `/will_reply/`:
+
+```
+curl http://localhost:5000/will_reply/?from=russell.jurney@gmail.com&to=p@pstam.com&hour=10
+```
+
+The result: 83.9376 chance of reply if I email Stammy at 10AM.
