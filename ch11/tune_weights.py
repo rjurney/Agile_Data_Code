@@ -51,4 +51,3 @@ for record in df_reader:
   for i in [x / 10.0 for x in range(0, 11, 1)]:
     result = (p_from_hour * i) + (p_from_to_reply * (1 - i))
     print message_id + "\t" + str(i) + "\t" + str(1 - i) + "\t" + str(result)
-  
