@@ -1,6 +1,7 @@
 import pymongo
 from datetime import datetime
 from flask import Flask, request
+from nltk.tokenize import word_tokenize
 
 conn = pymongo.Connection() # defaults to localhost
 db = conn.agile_data

@@ -18,3 +18,4 @@ honcho
 scipy
 dotcloud
 python-dateutil
+nltk
