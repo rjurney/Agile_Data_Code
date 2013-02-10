@@ -17,6 +17,7 @@ app = Flask(__name__)
 def will_reply():
   froms = request.args.get('from')
   to = request.args.get('to')
+  body = request.args.get('body')
   
   hour = request.args.get('hour') or datetime.time(datetime.now()).hour
   int_hour = int(hour)
