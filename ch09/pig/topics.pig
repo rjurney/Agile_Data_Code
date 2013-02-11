@@ -1,20 +1,23 @@
+/* Set Home Directory - where we install software */
+%default HOME `echo \$HOME/Software/`
+
 /* Avro uses json-simple, and is in piggybank until Pig 0.12, where AvroStorage and TrevniStorage are builtins */
-REGISTER /me/Software/pig/build/ivy/lib/Pig/avro-1.5.3.jar
-REGISTER /me/Software/pig/build/ivy/lib/Pig/json-simple-1.1.jar
-REGISTER /me/Software/pig/contrib/piggybank/java/piggybank.jar
+REGISTER $HOME/pig/build/ivy/lib/Pig/avro-1.5.3.jar
+REGISTER $HOME/pig/build/ivy/lib/Pig/json-simple-1.1.jar
+REGISTER $HOME/pig/contrib/piggybank/java/piggybank.jar
 
 DEFINE AvroStorage org.apache.pig.piggybank.storage.avro.AvroStorage();
 DEFINE LENGTH org.apache.pig.piggybank.evaluation.string.LENGTH();
 
-REGISTER /me/Software/varaha/lib/*.jar /* */
-REGISTER /me/Software/varaha/target/varaha-1.0-SNAPSHOT.jar 
+REGISTER $HOME/varaha/lib/*.jar /* */
+REGISTER $HOME/varaha/target/varaha-1.0-SNAPSHOT.jar 
 
 DEFINE TokenizeText varaha.text.TokenizeText();
 DEFINE StanfordTokenize varaha.text.StanfordTokenize();
 
 /* Data Fu */
-REGISTER /me/Software/datafu/dist/datafu-0.0.9-SNAPSHOT.jar
-REGISTER /me/Software/datafu/lib/*.jar /* */
+REGISTER $HOME/datafu/dist/datafu-0.0.9-SNAPSHOT.jar
+REGISTER $HOME/datafu/lib/*.jar /* */
 
 DEFINE Quantile datafu.pig.stats.Quantile('0.11','1.0');
 
