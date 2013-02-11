@@ -105,7 +105,7 @@ python ./classify
 To check it, enter well-known values for your own inbox as query parameters to `/will_reply/`:
 
 ```
-curl http://localhost:5000/will_reply/?from=russell.jurney@gmail.com&to=p@pstam.com&hour=10
+curl http://localhost:5000/will_reply/?from=russell.jurney@gmail.com&to=p@pstam.com&body=hadoop
 ```
 
-The result: 83.9376 chance of reply if I email Stammy at 10AM.
+The result: 83.9376 chance of reply if I email Stammy about Hadoop.

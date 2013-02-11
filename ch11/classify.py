@@ -1,5 +1,4 @@
 import pymongo
-from datetime import datetime
 from flask import Flask, request
 from nltk.tokenize import word_tokenize
 
@@ -45,6 +44,8 @@ def will_reply():
     p_from_to_reply = ftrr['ratio']
   else:
     p_from_to_reply = prior
+  
+  # Combine the two preditions, equally weighted
   result = (token_rate * .5) + (p_from_to_reply * (1 - .5))
   return str(result)
 
