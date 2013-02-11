@@ -51,46 +51,34 @@ db.from_to_reply_ratios.findOne();
 
 ```
 
-## Calculate Reply Probability by Time of Email Sent- P(reply|from & hour)##
+## Calculate Reply Probability by Token - P(reply|token)##
 
 To calculate and fill in empty zeros in the distributions, run:
 
 ```
-pig -l /tmp -x local -v -w p_reply_given_time_of_day.pig
+pig -l /tmp -x local -v -w p_reply_given_topics.pig
 ```
 
-To smooth this data using the Hamming distribution, run:
+To publish this data, run:
 
 ```
-pig -l /tmp -x local -v -w smooth_times.pig
+pig -l /tmp -x local -v -w publish_topics_.pig
 ```
 
-Which uses `hamming.py` to and Pig streaming to smooth the email sent distribution using the Hamming distribution.
+This will create a mongodb store: 'mongodb://localhost/agile_data.token_reply_rates_'
 
-This will create a mongodb store: 'mongodb://localhost/agile_data.hourly_from_reply_probs'
-
-## Check MongoDB for P(reply|from & hour) ##
+## Check MongoDB for P(reply|token) ##
 
 Run 'mongo.js', or in the mongo terminal:
 
 ```
 mongo agile_data
-db.hourly_from_reply_probs.ensureIndex({address: 1});
-db.hourly_from_reply_probs.findOne();
+db.token_reply_rates.ensureIndex({token: 1});
+db.token_reply_rates.findOne();
 {
-	"_id" : ObjectId("5111644c3004641354d5ee5a"),
-	"address" : "russell.jurney@gmail.com",
-	"sent_distribution" : [
-		{
-			"hour" : "00",
-			"p_reply" : 0.452386044568
-		},
-		{
-			"hour" : "01",
-			"p_reply" : 0.419107010988
-		},
-    ...
-  ]
+	"_id" : ObjectId("511700c330048b60597e7c04"),
+	"token" : "public",
+	"reply_rate" : 0.6969366812896153
 }
 ```
 
