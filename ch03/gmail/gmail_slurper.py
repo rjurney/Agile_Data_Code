@@ -107,6 +107,8 @@ class GmailSlurper(object):
         return 'UNICODE', {}, charset
     except UnicodeDecodeError:
       return 'UNICODE', {}, charset
+    except:
+      return 'ERROR', {}, None
     
     # Without a charset we pass bad chars to avro, and it dies. See AVRO-565.
     if charset:
