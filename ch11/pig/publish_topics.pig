@@ -13,3 +13,6 @@ store token_reply_rates into 'mongodb://localhost/agile_data.token_reply_rates' 
 
 token_no_reply_rates = LOAD '/tmp/no_reply_rates.txt' AS (token:chararray, reply_rate:double);
 store token_no_reply_rates into 'mongodb://localhost/agile_data.token_no_reply_rates' using MongoStorage();
+
+p_token = LOAD '/tmp/p_token.txt' AS (token:chararray, prob:double);
+store p_token into 'mongodb://localhost/agile_data.p_token' using MongoStorage();

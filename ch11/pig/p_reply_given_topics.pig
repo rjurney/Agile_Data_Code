@@ -14,6 +14,8 @@ REGISTER /me/Software/varaha/target/varaha-1.0-SNAPSHOT.jar
 DEFINE TokenizeText varaha.text.TokenizeText();
 
 rmf /tmp/reply_rates.txt
+rmf /tmp/no_reply_rates.txt
+rmf /tmp/p_token.txt
 
 /* Load emails, trim fields to id/body */
 emails = load '/me/Data/test_mbox' using AvroStorage();
@@ -40,7 +42,12 @@ term_freqs = foreach pre_term_counts generate
 /* By Term - Calculate the SENT COUNT */
 total_term_freqs = foreach (group term_freqs by token) generate (chararray)group as token, 
                                                                 SUM(term_freqs.term_freq) as total_freq_sent;
-  
+
+/* Calculate the probability of a given token occuring */
+overall_total = foreach (group term_freqs all) generate SUM(term_freqs.term_freq) as total_freq_sent;
+p_token = foreach (group term_freqs by token) generate group as token, (double)SUM(term_freqs.term_freq) / (double)overall_total.total_freq_sent as prob;
+store p_token into '/tmp/p_token.txt';
+
 replies = foreach emails generate message_id, in_reply_to;
 with_replies = join term_freqs by message_id left outer, replies by in_reply_to;
 

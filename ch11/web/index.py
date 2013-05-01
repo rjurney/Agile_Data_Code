@@ -19,8 +19,10 @@ sent_distributions = db['sent_distributions']
 related_addresses = db['related_addresses']
 topics_per_email = db['topics_per_email']
 from_to_reply_ratios = db['from_to_reply_ratios']
+p_sent_from_to = db['p_sent_from_to']
 token_reply_rates = db['token_reply_rates']
 token_no_reply_rates = db['token_no_reply_rates']
+p_token = db['p_token']
 
 # Setup ElasticSearch
 elastic = pyelasticsearch.ElasticSearch(config.ELASTIC_URL)
@@ -129,12 +131,13 @@ def will_reply():
   no_reply_rate = 1
   if(body):
     for token in word_tokenize(body):
+      prior = p_token.find_one({'token': token})
       reply_search = token_reply_rates.find_one({'token': token})
       no_reply_search = token_no_reply_rates.find_one({'token': token})
       if reply_search:
-        reply_probs.append(reply_search['reply_rate'])
+        reply_probs.append(reply_search['reply_rate'] * prior['prob'])
       if no_reply_search:
-        no_reply_probs.append(no_reply_search['reply_rate'])
+        no_reply_probs.append(no_reply_search['reply_rate'] * prior['prob'])
     reply_ary = float(len(reply_probs))
     reply_rate = sum(reply_probs) / len(reply_probs)
     no_reply_ary = float(len(no_reply_probs))
@@ -143,15 +146,20 @@ def will_reply():
   # Use from/to probabilities when available
   ftrr = from_to_reply_ratios.find_one({'from': froms, 'to': to})
   if ftrr:
-    print ftrr
     p_from_to_reply = ftrr['ratio']
+    prior = p_sent_from_to.find_one({'from': froms, 'to': to})
+    if prior:
+      p_from_to_reply *= prior['p_sent']
   else:
     p_from_to_reply = 1.0
 
   # Combine the two preditions, equally weighted
   positive = reply_rate * p_from_to_reply
   negative = no_reply_rate * p_from_to_reply
-  return str(positive) + ":" + str(negative)
+  if(positive > negative):
+    return "REPLY"
+  else:
+    return "NO REPLY"
 
 if __name__ == "__main__":
   app.run(debug=True)
