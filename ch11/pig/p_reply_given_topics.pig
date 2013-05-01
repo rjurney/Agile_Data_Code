@@ -15,9 +15,11 @@ DEFINE TokenizeText varaha.text.TokenizeText();
 
 rmf /tmp/reply_rates.txt
 
+/* Load emails, trim fields to id/body */
 emails = load '/me/Data/test_mbox' using AvroStorage();
 id_body = foreach emails generate message_id, body;
 
+/* Tokenize text, count of each token per document */
 token_records = foreach id_body generate message_id, FLATTEN(TokenizeText(body)) as token;
 doc_word_totals = foreach (group token_records by (message_id, token)) generate 
   FLATTEN(group) as (message_id, token), 
