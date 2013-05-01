@@ -1,15 +1,15 @@
 /* Set Home Directory - where we install software */
-%default HOME `echo \$HOME/Software/`
+%default HOME `echo \/me/Software/Software/`
 
 /* Avro uses json-simple, and is in piggybank until Pig 0.12, where AvroStorage and TrevniStorage are builtins */
-REGISTER $HOME/pig/build/ivy/lib/Pig/avro-1.5.3.jar
-REGISTER $HOME/pig/build/ivy/lib/Pig/json-simple-1.1.jar
-REGISTER $HOME/pig/contrib/piggybank/java/piggybank.jar
+REGISTER /me/Software/pig/build/ivy/lib/Pig/avro-1.5.3.jar
+REGISTER /me/Software/pig/build/ivy/lib/Pig/json-simple-1.1.jar
+REGISTER /me/Software/pig/contrib/piggybank/java/piggybank.jar
 
 DEFINE AvroStorage org.apache.pig.piggybank.storage.avro.AvroStorage();
 
-REGISTER $HOME/varaha/lib/*.jar /* */
-REGISTER $HOME/Software/varaha/target/varaha-1.0-SNAPSHOT.jar 
+REGISTER /me/Software/varaha/lib/*.jar /* */
+REGISTER /me/Software/varaha/target/varaha-1.0-SNAPSHOT.jar 
 
 DEFINE TokenizeText varaha.text.TokenizeText();
 
@@ -31,7 +31,7 @@ pre_term_counts = foreach (group doc_word_totals by message_id) generate
   FLATTEN(doc_word_totals.(token, doc_total)) as (token, doc_total), 
   SUM(doc_word_totals.doc_total) as doc_size;
 
-/* Calculate the TF */
+/* Calculate the Term Frequency */
 term_freqs = foreach pre_term_counts generate 
   message_id as message_id,
   token as token,
@@ -42,7 +42,10 @@ total_term_freqs = foreach (group term_freqs by token) generate (chararray)group
                                                                 SUM(term_freqs.term_freq) as total_freq_sent;
   
 replies = foreach emails generate message_id, in_reply_to;
-with_replies = join term_freqs by message_id, replies by in_reply_to;
+with_replies = join term_freqs by message_id left outer, replies by in_reply_to;
+
+/* Split, because we're going to calculate P(reply|token) and P(no reply|token) */
+split with_replies into has_reply if (in_reply_to is not null), no_reply if (in_reply_to is null);
 
 /* with_replies: 
 {
@@ -53,9 +56,16 @@ with_replies = join term_freqs by message_id, replies by in_reply_to;
   replies::in_reply_to: chararray
 } */
 
-total_replies = foreach (group with_replies by term_freqs::token) generate (chararray)group as token, 
-                                                                           SUM(with_replies.term_freqs::term_freq) as total_freq_replied;
+/* Calculate reply probability for all tokens */
+total_replies = foreach (group has_reply by term_freqs::token) generate (chararray)group as token, 
+                                                                        SUM(has_reply.term_freqs::term_freq) as total_freq_replied;
 sent_totals_reply_totals = JOIN total_term_freqs by token, total_replies by token;
 token_reply_rates = foreach sent_totals_reply_totals generate total_term_freqs::token as token, (double)total_freq_replied / (double)total_freq_sent as reply_rate;
-
 store token_reply_rates into '/tmp/reply_rates.txt';
+
+/* Calculate NO reply probability for all tokens */
+total_no_reply = foreach (group no_reply by term_freqs::token) generate (chararray)group as token,
+                                                                        SUM(no_reply.term_freqs::term_freq) as total_freq_no_reply;
+sent_totals_no_reply_totals = JOIN total_term_freqs by token, total_no_reply by token;
+token_no_reply_rates = foreach sent_totals_no_reply_totals generate total_term_freqs::token as token, (double)total_freq_no_reply / (double)total_freq_sent as reply_rate;
+store token_no_reply_rates into '/tmp/no_reply_rates.txt';

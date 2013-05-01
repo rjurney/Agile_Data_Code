@@ -10,3 +10,6 @@ DEFINE MongoStorage com.mongodb.hadoop.pig.MongoStorage();
 
 token_reply_rates = LOAD '/tmp/reply_rates.txt' AS (token:chararray, reply_rate:double);
 store token_reply_rates into 'mongodb://localhost/agile_data.token_reply_rates' using MongoStorage();
+
+token_no_reply_rates = LOAD '/tmp/no_reply_rates.txt' AS (token:chararray, reply_rate:double);
+store token_no_reply_rates into 'mongodb://localhost/agile_data.token_no_reply_rates' using MongoStorage();

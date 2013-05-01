@@ -6,8 +6,7 @@ conn = pymongo.Connection() # defaults to localhost
 db = conn.agile_data
 from_to_reply_ratios = db['from_to_reply_ratios']
 token_reply_rates = db['token_reply_rates']
-overall_reply_ratio = db['overall_reply_ratio']
-prior = overall_reply_ratio.find_one({'key': 'overall'})['reply_ratio']
+token_no_reply_rates = db['token_no_reply_rates']
 
 app = Flask(__name__)
 
@@ -23,19 +22,22 @@ def will_reply():
   
   # For each token in the body, if there's a match in MongoDB, 
   # append it and average all of them at the end
-  word_probs = []
+  reply_probs = []
+  reply_rate = 1
+  no_reply_probs = []
+  no_reply_rate = 1
   if(body):
     for token in word_tokenize(body):
-      search = token_reply_rates.find_one({'token': token})
-      if search:
-        word_probs.append(search['reply_rate'])
-    len_probs = float(len(word_probs))
-    if(len_probs > 0):
-      token_rate = sum(word_probs) / len_probs
-    else:
-      token_rate = prior
-  else:
-    token_rate = prior
+      reply_search = token_reply_rates.find_one({'token': token})
+      no_reply_search = token_no_reply_rates.find_one({'token': token})
+      if reply_search:
+        reply_probs.append(reply_search['reply_rate'])
+      if no_reply_search:
+        no_reply_probs.append(no_reply_search['reply_rate'])
+    reply_ary = float(len(reply_probs))
+    reply_rate = sum(reply_probs) / len(reply_probs)
+    no_reply_ary = float(len(no_reply_probs))
+    no_reply_rate = sum(no_reply_probs) / len(no_reply_probs)
   
   # Use from/to probabilities when available
   ftrr = from_to_reply_ratios.find_one({'from': froms, 'to': to})
@@ -43,11 +45,12 @@ def will_reply():
     print ftrr
     p_from_to_reply = ftrr['ratio']
   else:
-    p_from_to_reply = prior
+    p_from_to_reply = 1.0
   
   # Combine the two preditions, equally weighted
-  result = (token_rate * .5) + (p_from_to_reply * (1 - .5))
-  return str(result)
+  positive = reply_rate * p_from_to_reply
+  negative = no_reply_rate * p_from_to_reply
+  return str(positive) + ":" + str(negative)
 
 if __name__ == "__main__":
   app.run(debug=True)
