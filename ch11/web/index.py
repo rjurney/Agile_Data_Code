@@ -131,9 +131,9 @@ def will_reply():
   no_reply_rate = 1
   if(body):
     for token in word_tokenize(body):
-      prior = p_token.find_one({'token': token})
-      reply_search = token_reply_rates.find_one({'token': token})
-      no_reply_search = token_no_reply_rates.find_one({'token': token})
+      prior = p_token.find_one({'token': token}) # db.p_token.ensureIndex({'token': 1})
+      reply_search = token_reply_rates.find_one({'token': token}) # db.token_reply_rates.ensureIndex({'token': 1})
+      no_reply_search = token_no_reply_rates.find_one({'token': token}) # db.token_no_reply_rates.ensureIndex({'token': 1})
       if reply_search:
         reply_probs.append(reply_search['reply_rate'] * prior['prob'])
       if no_reply_search:
@@ -144,10 +144,10 @@ def will_reply():
     no_reply_rate = sum(no_reply_probs) / len(no_reply_probs)
 
   # Use from/to probabilities when available
-  ftrr = from_to_reply_ratios.find_one({'from': froms, 'to': to})
+  ftrr = from_to_reply_ratios.find_one({'from': froms, 'to': to}) # db.from_to_reply_ratios.ensureIndex({from: 1, to: 1})
   if ftrr:
     p_from_to_reply = ftrr['ratio']
-    prior = p_sent_from_to.find_one({'from': froms, 'to': to})
+    prior = p_sent_from_to.find_one({'from': froms, 'to': to}) # db.p_sent_from_to.ensureIndex({from: 1, to: 1})
     if prior:
       p_from_to_reply *= prior['p_sent']
   else:
@@ -156,6 +156,7 @@ def will_reply():
   # Combine the two preditions, equally weighted
   positive = reply_rate * p_from_to_reply
   negative = no_reply_rate * p_from_to_reply
+  print "%s vs %s" % (positive, negative)
   if(positive > negative):
     return "REPLY"
   else:
