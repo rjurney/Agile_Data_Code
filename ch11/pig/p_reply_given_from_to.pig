@@ -28,6 +28,7 @@ rmf /tmp/overall_replies.txt
 rmf /tmp/smooth_distributions.avro
 rmf /tmp/sent_count_overall_replies.txt
 rmf /tmp/p_sent_from_to.txt
+rmf /tmp/no_reply_ratios.txt
 
 -- Count both from addresses and reply_to addresses as 
 emails = load '/me/Data/test_mbox' using AvroStorage();
