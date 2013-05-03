@@ -153,7 +153,7 @@ def will_reply():
   else:
     p_from_to_reply = 1.0
 
-  # Combine the two preditions, equally weighted
+  # Combine the two predictions
   positive = reply_rate * p_from_to_reply
   negative = no_reply_rate * p_from_to_reply
   print "%s vs %s" % (positive, negative)

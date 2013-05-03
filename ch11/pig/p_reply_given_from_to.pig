@@ -27,6 +27,7 @@ rmf /tmp/reply_ratios.txt
 rmf /tmp/overall_replies.txt
 rmf /tmp/smooth_distributions.avro
 rmf /tmp/sent_count_overall_replies.txt
+rmf /tmp/p_sent_from_to.txt
 
 -- Count both from addresses and reply_to addresses as 
 emails = load '/me/Data/test_mbox' using AvroStorage();
@@ -46,10 +47,12 @@ replies = foreach replies generate from.address as from,
 replies = filter replies by in_reply_to != 'None';
 
 /* Now join a copy of the emails by message id to the in_reply_to of our emails */
-with_reply = join sent_emails by message_id, replies by in_reply_to;
+with_reply = join sent_emails by message_id left outer, replies by in_reply_to;
+
+split with_reply into has_reply if (in_reply_to is not null), no_reply if (in_reply_to is null);
 
 /* Filter out mailing lists - only direct replies where from/to match up */
-direct_replies = filter with_reply by (sent_emails::from == replies::to) and (sent_emails::to == replies::from);
+direct_replies = filter has_reply by (sent_emails::from == replies::to) and (sent_emails::to == replies::from);
 
 /* Count replies */
 trimmed_replies = foreach direct_replies generate sent_emails::from as from, sent_emails::to as to;
@@ -66,17 +69,28 @@ reply_ratios = foreach reply_ratios generate from, to, (ratio > 1.0 ? 1.0 : rati
 store reply_ratios into '/tmp/reply_ratios.txt';
 store reply_ratios into 'mongodb://localhost/agile_data.from_to_reply_ratios' using MongoStorage();
 
+trimmed_no_replies = foreach no_reply generate sent_emails::from as from, sent_emails::to as to;
+no_reply_counts = foreach (group trimmed_no_replies by (from, to)) generate flatten(group) as (from, to),
+                                                       COUNT_STAR(trimmed_no_replies) as total;
+sent_no_replies = join sent_counts by (from, to), no_reply_counts by (from, to);
+no_reply_ratios = foreach sent_no_replies generate sent_counts::from as from,
+                                                   sent_counts::to as to,
+                                                   (double)no_reply_counts::total/sent_counts::total as ratio:double;
+no_reply_ratios = foreach no_reply_ratios generate from, to, (ratio > 1.0 ? 1.0 : ratio) as ratio;
+store no_reply_ratios into '/tmp/no_reply_ratios.txt';
+store no_reply_ratios into 'mongodb://localhost/agile_data.from_to_no_reply_ratios' using MongoStorage();
+
 -- Calculate the overall reply ratio - period.
 overall_replies = foreach (group sent_replies all) generate 'overall' as key:chararray, 
                                                             SUM(sent_replies.sent_counts::total) as sent,
                                                             SUM(sent_replies.reply_counts::total) as replies,
                                                             (double)SUM(sent_replies.reply_counts::total)/(double)SUM(sent_replies.sent_counts::total) as reply_ratio; 
+overall_replies = LIMIT overall_replies 1;
 store overall_replies into '/tmp/overall_replies.txt';
 store overall_replies into 'mongodb://localhost/agile_data.overall_reply_ratio' using MongoStorage();
 
-sent_count_overall_replies = CROSS sent_counts, overall_replies;
-sent_count_overall_replies = foreach sent_count_overall_replies generate sent_counts::from as from,
-                                                                         sent_counts::to as to,
-                                                                         (double)sent_counts::total / (double)overall_replies::sent as p_sent;
-store sent_count_overall_replies into '/tmp/sent_count_overall_replies.txt';
-store sent_count_overall_replies into 'mongodb://localhost/agile_data.p_sent_from_to' using MongoStorage();
+all_emails = foreach (group sent_counts all) generate SUM(sent_counts.total) as total;
+p_sent_from_to = foreach (group sent_counts by (from, to)) generate FLATTEN(group) as (from, to), 
+                                                                    (double)SUM(sent_counts.total)/(double)all_emails.total;
+store p_sent_from_to into '/tmp/p_sent_from_to.txt';
+store p_sent_from_to into 'mongodb://localhost/agile_data.p_sent_from_to' using MongoStorage();
