@@ -19,6 +19,7 @@ sent_distributions = db['sent_distributions']
 related_addresses = db['related_addresses']
 topics_per_email = db['topics_per_email']
 from_to_reply_ratios = db['from_to_reply_ratios']
+from_to_no_reply_ratios = db['from_to_no_reply_ratios']
 p_sent_from_to = db['p_sent_from_to']
 token_reply_rates = db['token_reply_rates']
 token_no_reply_rates = db['token_no_reply_rates']
@@ -145,18 +146,18 @@ def will_reply():
 
   # Use from/to probabilities when available
   ftrr = from_to_reply_ratios.find_one({'from': froms, 'to': to}) # db.from_to_reply_ratios.ensureIndex({from: 1, to: 1})
+  ftnrr = from_to_no_reply_ratios.find_one({'from': froms, 'to': to}) # db.from_to_no_reply_ratios.ensureIndex({from: 1, to: 1})
   if ftrr:
     p_from_to_reply = ftrr['ratio']
-    prior = p_sent_from_to.find_one({'from': froms, 'to': to}) # db.p_sent_from_to.ensureIndex({from: 1, to: 1})
-    if prior:
-      p_from_to_reply *= prior['p_sent']
+    p_from_to_no_reply = ftnrr['ratio']
   else:
     p_from_to_reply = 1.0
+    p_from_to_no_reply = 1.0
 
   # Combine the two predictions
   positive = reply_rate * p_from_to_reply
-  negative = no_reply_rate * p_from_to_reply
-  print "%s vs %s" % (positive, negative)
+  negative = no_reply_rate * p_from_to_no_reply
+  print "%2f vs %2f" % (positive, negative)
   if(positive > negative):
     return "REPLY"
   else:
