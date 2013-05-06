@@ -52,6 +52,9 @@ with_reply = join sent_emails by message_id left outer, replies by in_reply_to;
 
 split with_reply into has_reply if (in_reply_to is not null), no_reply if (in_reply_to is null);
 
+store has_reply into '/tmp/has_reply.txt';
+store no_reply into '/tmp/no_reply.txt';
+
 /* Filter out mailing lists - only direct replies where from/to match up */
 direct_replies = filter has_reply by (sent_emails::from == replies::to) and (sent_emails::to == replies::from);
 
