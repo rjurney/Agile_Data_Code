@@ -1,0 +1,23 @@
+<!-- Extend our site layout -->
+{% extends "layout.html" %}
+
+<!-- Include our common macro set -->
+{% import "macros.jnj" as common %}
+
+{% block content -%}
+
+<form action="/will_reply" method="get">
+  <fieldset>
+  <label>From:</label> 
+  <input type="text" name="from" value="{{ froms }}"></input>
+  <label>To:</label> 
+  <input type="text" name="to" value="{{ to }}"></input>
+  <label>Body:</label>
+  <textarea rows="4" name="message_body" style="width: 500px">{{ message_body }}</textarea>
+  </fieldset>
+  <button type="submit" class="btn">Submit</button>
+</form>
+
+<p>{{ result }}</p>
+
+{% endblock -%}

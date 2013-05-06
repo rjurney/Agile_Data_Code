@@ -113,16 +113,16 @@ def address(address, offset1=0, offset2=config.EMAILS_PER_ADDRESS_PAGE):
                          address='<' + address + '>',
                          reply_ratio=reply_ratio
                          )
-                         
+                
 # Controller: Fetch an email and display it
-@app.route("/will_reply/")
+@app.route("/will_reply")
 def will_reply():
 
   # Get the message_id, from, first to, and message body
   message_id = request.args.get('mesage_id')
   froms = request.args.get('from')
   to = request.args.get('to')
-  body = request.args.get('body')
+  body = request.args.get('message_body')
 
   # For each token in the body, if there's a match in MongoDB, 
   # append it and average all of them at the end
@@ -132,17 +132,22 @@ def will_reply():
   no_reply_rate = 1
   if(body):
     for token in word_tokenize(body):
+      
       prior = p_token.find_one({'token': token}) # db.p_token.ensureIndex({'token': 1})
       reply_search = token_reply_rates.find_one({'token': token}) # db.token_reply_rates.ensureIndex({'token': 1})
       no_reply_search = token_no_reply_rates.find_one({'token': token}) # db.token_no_reply_rates.ensureIndex({'token': 1})
       if reply_search:
-        reply_probs.append(reply_search['reply_rate'] * prior['prob'])
+        word_prob = reply_search['reply_rate'] * prior['prob']
+        print("Token: " + token + " Reply Prob: " + str(word_prob))
+        reply_probs.append(word_prob)
       if no_reply_search:
-        no_reply_probs.append(no_reply_search['reply_rate'] * prior['prob'])
+        word_prob = no_reply_search['reply_rate'] * prior['prob']
+        print("Token: " + token + " No Reply Prob: " + str(word_prob))
+        no_reply_probs.append(word_prob)
     reply_ary = float(len(reply_probs))
-    reply_rate = sum(reply_probs) / len(reply_probs)
+    reply_rate = sum(reply_probs) / (len(reply_probs) if len(reply_probs) > 0 else 1)
     no_reply_ary = float(len(no_reply_probs))
-    no_reply_rate = sum(no_reply_probs) / len(no_reply_probs)
+    no_reply_rate = sum(no_reply_probs) / (len(no_reply_probs) if len(no_reply_probs) > 0 else 1)
 
   # Use from/to probabilities when available
   ftrr = from_to_reply_ratios.find_one({'from': froms, 'to': to}) # db.from_to_reply_ratios.ensureIndex({from: 1, to: 1})
@@ -158,10 +163,10 @@ def will_reply():
   positive = reply_rate * p_from_to_reply
   negative = no_reply_rate * p_from_to_no_reply
   print "%2f vs %2f" % (positive, negative)
-  if(positive > negative):
-    return "REPLY"
-  else:
-    return "NO REPLY"
+  result = "REPLY" if positive > negative else "NO REPLY"
+
+  return render_template('partials/will_reply.html', result=result, froms=froms, to=to, message_body=body)
+
 
 if __name__ == "__main__":
   app.run(debug=True)
