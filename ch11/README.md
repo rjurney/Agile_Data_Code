@@ -80,20 +80,26 @@ db.token_reply_rates.findOne();
 	"token" : "public",
 	"reply_rate" : 0.6969366812896153
 }
+db.p_token.ensureIndex({'token': 1})
+db.p_token.findOne();
+> db.p_token.findOne({'token': 'public'});
+{
+	"_id" : ObjectId("518444db3004f7fadcb595d9"),
+	"token" : "public",
+	"prob" : 0.00041651697680944406
+}
 ```
 
 ## Deploy Classifier ##
 
-Run classify.py to deploy classifier web service against MongoDB probability tables:
+Run index.py to deploy classifier web service against MongoDB probability tables:
 
 ```
-python ./classify
+python ./index
 ```
 
-To check it, enter well-known values for your own inbox as query parameters to `/will_reply/`:
+To check it, enter well-known values for your own inbox as query parameters to `/will_reply`:
 
 ```
-curl http://localhost:5000/will_reply/?from=russell.jurney@gmail.com&to=p@pstam.com&body=hadoop
+curl http://localhost:5000/will_reply?from=russell.jurney@gmail.com&to=*@****.com&message_body=hadoop
 ```
-
-The result: 83.9376 chance of reply if I email Stammy about Hadoop.
