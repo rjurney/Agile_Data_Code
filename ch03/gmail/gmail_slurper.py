@@ -134,7 +134,11 @@ class GmailSlurper(object):
         (status, email_hash, charset) = self.fetch_email(email_id)
         if(status == 'OK' and charset and 'thread_id' in email_hash and 'from' in email_hash):
           print email_id, charset, email_hash['thread_id']
-          self.write(email_hash)
+          try:
+            self.write(email_hash)
+          except UnicodeDecodeError, e:
+            sys.stderr.write("Error decode email id " + str(email_id) + ". error message: " + e.message)
+            continue
           if((int(email_id) % 1000) == 0):
             self.flush()
         elif(status == 'ERROR' or status == 'PARSE' or status == 'UNICODE' or status == 'CHARSET' or status =='FROM'):
