@@ -48,6 +48,16 @@
       {{ display_email_body(email) }}
     </div>
       <div class="span4">
+        {% if topics -%}
+          <h3 style="margin-bottom: 5px;">Topics</h2>
+          <ul class="nav nav-pills">
+            {% for item in topics['topics'] -%}
+            <li class="active">
+              <a style="margin: 3px;" href="/topic/{{ item['word'] }}">{{ item['word'] }}</a>
+            </li>
+            {% endfor -%}
+          </ul>
+        {% endif -%}
         {% if addresses -%}
           <h3 style="margin-bottom: 5px;">Email Addresses</h2>
           <ul class="nav nav-pills">
@@ -66,15 +76,44 @@
             sssafafafa
           </div>
           <script>
-          // Custom color function to highlight mode of the data
-          var data = [{"key": "Test Chart", "values": {{ chart_json|safe }}}];
-          var defaultColor = '#08C';
-          var modeColor = '#4CA9F5'; 
-          var maxy = d3.max(data[0]['values'], function(d) { return d.total; });
-          var myColor = function(d, i) { 
-             if(d['total'] == maxy) { return modeColor; }
-             else { return defaultColor; }
+          // Get "00" - "23"
+          function makeHourRange(num) {
+            return num < 10 ? "0" + num.toString() : num.toString();
           }
+
+          function fillBlanks(rawData) {
+            var hourRange = d3.range(0,24);
+            var ourData = Array();
+            for (hour in hourRange)
+            {
+              var hourString = makeHourRange(hour);
+              var found = false;
+              for(x in rawData)
+              {
+                if(rawData[x]['sent_hour'] == hourString)
+                {
+                  found = true;
+                  break;
+                }
+              }
+              if(found == true)
+              {
+                ourData.push(rawData[x]);
+              }
+              else
+              {
+                ourData.push({'sent_hour': hourString, 'total': 0})
+              }
+            }
+            return ourData;
+          }
+
+          var rawData = {{ chart_json|safe }};
+          var filledData = fillBlanks(rawData);
+
+          var myColor = function() { return '#08C'; }
+          var data = [{"key": "Test Chart", "values": filledData}]; //{{ chart_json|safe }}}];
+          
           nv.addGraph(function() {
            var chart = nv.models.discreteBarChart()
                .x(function(d) { return d.sent_hour })
@@ -96,7 +135,7 @@
            return chart;
           });
 
-           </script>
+          </script>
         {% endif -%}
       </div>
     {% if sent_distribution -%}
@@ -107,7 +146,7 @@
             <th>Total Sent</th>
           </thead>
           <tbody>
-            {% for item in sent_distribution['sent_distribution'] %}
+            {% for item in sent_distribution %}
             <tr style="white-space:nowrap;">
               <td>{{ item['sent_hour'] }}</td>
               <td style="white-space:nowrap;">{{ item['total'] }}</td>

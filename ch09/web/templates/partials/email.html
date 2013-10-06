@@ -146,7 +146,7 @@
             <th>Total Sent</th>
           </thead>
           <tbody>
-            {% for item in sent_distribution['sent_distribution'] %}
+            {% for item in sent_distribution %}
             <tr style="white-space:nowrap;">
               <td>{{ item['sent_hour'] }}</td>
               <td style="white-space:nowrap;">{{ item['total'] }}</td>

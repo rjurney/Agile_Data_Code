@@ -88,9 +88,13 @@
     
     <!-- Part 1: Wrap all page content here -->
     <div id="wrap">
-
-      <!-- Begin page content -->
+      <!--<script src="/static/bootstrap/js/bootstrap.min.js"></script>-->
+      <script src="/static/d3/d3.v3.min.js"></script>
+      <script src="/static/nvd3/nv.d3.min.js"></script>
       <div class="container">
+        <div class="page-header">
+          <h1><a href="/">Analytic Inbox</a></h1>
+        </div>
         {% block content %}{% endblock %}
       </div>
 
@@ -103,13 +107,5 @@
         <p class="muted credit"><a href="http://shop.oreilly.com/product/0636920025054.do">Agile Data</a> by <a href="http://www.linkedin.com/in/russelljurney">Russell Jurney</a>, 2013
       </div>
     </div>
-
-
-
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="../assets/js/jquery.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>

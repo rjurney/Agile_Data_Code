@@ -1,6 +1,6 @@
 <!-- Display a link as a value -->
 {% macro display_link(value, base_path, display) -%}
-  <a href="{{ base_path }}/{{ value }}">{{ limit_length(display, 50) }}</a>
+  <div><a href="{{ base_path }}/{{ value }}">{{ limit_length(display, 80) }}</a></div>
 {% endmacro -%}
 
 <!-- Display a label for a field -->
@@ -39,9 +39,9 @@
 
 {% macro display_email_address(email_record) -%}
   {% if email_record['real_name'] and email_record['real_name']|length > 1 -%}
-    {{ display_link(email_record['address']|safe, '/address'|safe, limit_length(email_record['real_name'],20)|safe + ' <' + email_record['address']|safe + '>')|safe}}
+    {{ limit_length(email_record['real_name'],20)|safe + ' <' + email_record['address']|safe + '>'}}
   {% else -%}
-    {{ display_link(email_record['address']|safe, '/address'|safe, '<' + email_record['address'] + '>'|safe) }}
+    {{ '<' + email_record['address'] + '>'|safe }}
   {% endif -%}
 {% endmacro -%}
 

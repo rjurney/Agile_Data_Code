@@ -7,10 +7,13 @@
 <!-- Parse a pig tuple being passed through in string format -->
 
 {% block content -%}
-  <p class="lead">Emails
+  <div class="page-header">
+    <h1>Analytic Inbox</h1>
+  </div>
+  <div class="lead">Emails
   <form class="navbar-search pull-right">
-    <input style="font-size: 13pt; height: 25px;" name="search" type="text" class="search-query" placeholder="Search" value="{% if query -%}{{query}} {% endif -%}">
-  </form></p>
+    <input name="search" type="text" class="search-query" placeholder="Search" value="{% if query -%}{{query}} {% endif -%}">
+  </form></div>
   <div>
     <table class="table table-striped table-condensed">
       <thead>
