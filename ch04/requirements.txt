@@ -1,0 +1,25 @@
+##################################################################################################
+# 2013.12.31 - Added requirements.txt to allow dotcloud to build and obtain all dependent package
+##################################################################################################
+
+#BareNecessities==0.2.8
+#ESClient==0.5.3
+Flask==0.9
+Jinja2==2.6
+##LEPL==5.1.3
+##Mail==2.1.0
+#Werkzeug==0.8.3
+##distribute==0.6.31
+##python-snappy
+##avro==1.7.3
+-e git+https://github.com/rhec/pyelasticsearch.git#egg=pyelasticsearch
+pymongo==2.4.1
+requests==1.0.4
+simplejson==2.6.2
+wsgiref==0.1.2
+##numpy
+##honcho
+##scipy
+dotcloud
+##python-dateutil
+##nltk
