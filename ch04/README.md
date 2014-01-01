@@ -39,6 +39,34 @@ cd ch04/
 dotcloud create myapp
 dotcloud push myapp
 
+## Setup the s3cmd to connect to Amazon Simple Storage Service (S3)
+
+Firstly, sign up for a free account in Amazon Web Services. Credit card information is required in order to validate the account. As of writing, shouldn't worry about the charges as its very minimal if the size utilization is very small. (US$0.50 per month)
+
+After obtaining your free account, enable usage of S3, create a user id, create a new group called admin, assigned admin access rights to the group, and finally assign the newly created user to the admin group. You'll then need to create an access key and secret key before you can configure the s3cmd (Amazon S3 web interface -> Security and Credentials). You'll need to download s3cmd utility and execute the following command. 
+
+```
+[bash]$ ./s3cmd --configure
+New settings:
+  Access Key: <your access key>
+  Secret Key: <your secret key>
+  Encryption password: 
+  Path to GPG program: None
+  Use HTTPS protocol: True
+  HTTP Proxy server name: 
+  HTTP Proxy server port: 0
+```
+
+Upload the emails created so far into S3, by first creating a bucket
+```
+[bash]$ ./s3cmd mb s3://rjurney.email.upload
+Bucket 's3://rjurney.email.upload/' created
+
+[bash]$ ./s3cmd put --recursive /me/tmp/inbox s3://rjurney.email.upload
+/tmp/gmail_data/part-1.avro -> s3://joechong.email.upload/part-1.avro  [1 of 1]
+ 3473302 of 3473302   100% in    7s   439.21 kB/s  done 
+```
+
 ## Conclusion ##
 
 Thats it - cloud setup is done!
