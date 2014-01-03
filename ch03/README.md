@@ -6,6 +6,21 @@ You can buy the book [here](http://shop.oreilly.com/product/0636920025054.do). Y
 Agile Data - Chapter 3: Agile Tools
 =========================================================
 
+## Pre-requisites for Mac OS X (OS X Mavericks)
+
+The following need to be installed before the virtual environment and associated requirement(s) can be installed correctly. If you already have these items installed, please proceed to setup the Python virtual environment. 
+
+```
+# Setup ant - Required to compile snappy-c, yaml-c 
+brew install ant
+
+# Setup maven - Required to compile Wonderdog
+brew install maven
+
+# Setup gfortran - Required to compile SciPy
+brew install gfortran
+```
+
 ## Setup your Python Virtual Environment ##
 
 ```
