@@ -1,5 +1,5 @@
-# Derived from TF-IDF by Jacob Perkins at http://thedatachef.blogspot.com/2011/04/tf-idf-with-apache-pig.html with
-# help from Mat Kelcey who referred me to http://nlp.stanford.edu/IR-book/html/htmledition/maximum-tf-normalization-1.html
+/* Derived from TF-IDF by Jacob Perkins at http://thedatachef.blogspot.com/2011/04/tf-idf-with-apache-pig.html with
+ help from Mat Kelcey who referred me to http://nlp.stanford.edu/IR-book/html/htmledition/maximum-tf-normalization-1.html */
 
 DEFINE ntf_idf(token_records, id_field, token_field) RETURNS out_relation {
    
