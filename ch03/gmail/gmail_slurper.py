@@ -57,7 +57,7 @@ class GmailSlurper(object):
       email_schema
     )
     # CREATE A TEMP AvroWriter that can be used to workaround the UnicodeDecodeError when writing into AvroStorage
-    elf.avro_writertmp = datafile.DataFileWriter(
+    self.avro_writertmp = datafile.DataFileWriter(
  	    open(out_filenametmp, 'wb'),
       rec_writer,
       email_schema
