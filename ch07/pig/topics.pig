@@ -2,7 +2,7 @@
 %default HOME `echo \$HOME/Software/`
 
 /* Avro uses json-simple, and is in piggybank until Pig 0.12, where AvroStorage and TrevniStorage are builtins */
-REGISTER $HOME/pig/build/ivy/lib/Pig/avro-1.5.3.jar
+REGISTER $HOME/pig/build/ivy/lib/Pig/avro-1.7.4.jar
 REGISTER $HOME/pig/build/ivy/lib/Pig/json-simple-1.1.jar
 REGISTER $HOME/pig/contrib/piggybank/java/piggybank.jar
 
@@ -12,7 +12,7 @@ DEFINE LENGTH org.apache.pig.piggybank.evaluation.string.LENGTH();
 REGISTER $HOME/varaha/lib/*.jar /* Varaha has a good tokenizer */
 REGISTER $HOME/varaha/target/varaha-1.0-SNAPSHOT.jar 
 
-DEFINE TokenizeText varaha.text.TokenizeText();
+DEFINE TokenizeText varaha.text.TokenizeText('1', '1');
 
 set default_parallel 20
 
@@ -25,6 +25,7 @@ import 'ntfidf.macro';
 
 /* Load emails and trim unneeded fields */
 emails = load '/me/Data/test_mbox' using AvroStorage();
+-- emails = FILTER emails BY body IS NOT NULL;
 id_body_address = foreach emails generate message_id, body, from.address as address;
 
 /* Project and latten to message_id/address/token and basic filter */
