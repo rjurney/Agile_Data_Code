@@ -3,7 +3,7 @@
 # This is a command line utility for slurping emails from gmail and storing them as avro documents.
 # I uses the GmailSlurper class, which in turn uses email utils.
 
-import os, sys, getopt
+import os, sys, getopt, getpass
 from lepl.apps.rfc3696 import Email
 
 from gmail_slurper import GmailSlurper
@@ -35,7 +35,11 @@ def main():
   output_path = None
   single_id = None
   arg_check = dict()
-  
+
+  # Request password without echoing to commandline.
+  if '-p' not in sys.argv[1:]:
+    password = getpass.getpass()
+
   for o, a in opts:
     if o == "-m":
       mode = a
