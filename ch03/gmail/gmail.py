@@ -39,6 +39,7 @@ def main():
   # Request password without echoing to commandline.
   if '-p' not in sys.argv[1:]:
     password = getpass.getpass()
+    arg_check['-p'] = 1
 
   for o, a in opts:
     if o == "-m":
