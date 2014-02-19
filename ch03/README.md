@@ -27,10 +27,15 @@ cd gmail
 
 ## Download Apache Pig ##
 ```
-wget http://www.trieuvan.com/apache/pig/pig-0.10.1/pig-0.10.1.tar.gz
-tar -xvzf pig-0.10.1.tar.gz
-cd pig-0.10.1
-ant
+wget http://mirrors.ibiblio.org/apache/pig/pig-0.12.0/pig-0.12.0.tar.gz
+tar -xvzf pig-*.tar.gz
+cd pig-0.12.0
+```
+
+## Compile Pig for Hadoop 2.0.x ##
+
+```
+ant clean jar-withouthadoop -Dhadoopversion=23 
 ```
 
 Now you can run 'bin/pig'!
