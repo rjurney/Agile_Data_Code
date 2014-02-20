@@ -42,10 +42,15 @@ cd gmail
 
 ## Download Apache Pig ##
 ```
-wget http://www.trieuvan.com/apache/pig/pig-0.10.1/pig-0.10.1.tar.gz
-tar -xvzf pig-0.10.1.tar.gz
-cd pig-0.10.1
-ant
+wget http://mirrors.ibiblio.org/apache/pig/pig-0.12.0/pig-0.12.0.tar.gz
+tar -xvzf pig-*.tar.gz
+cd pig-0.12.0
+```
+
+## Compile Pig for Hadoop 2.0.x ##
+
+```
+ant clean jar-withouthadoop -Dhadoopversion=23 
 ```
 
 Now you can run 'bin/pig'!
@@ -104,11 +109,12 @@ bin/mongo agile_data
 
 ## Install MongoDB's Java Driver ##
 
-The MongoDB Java driver is available at https://github.com/mongodb/mongo-java-driver/downloads Download it, and place it at the base of your MongoDB install directory.
+The MongoDB Java driver is available at https://github.com/mongodb/mongo-java-driver/downloads or you can download recent snapshots like the one below. Register the path in pig/mongo.pig
 
 ```
 cd <my_mongodb_install_path>
-wget https://github.com/downloads/mongodb/mongo-java-driver/mongo-2.10.1.jar
+wget
+https://oss.sonatype.org/content/repositories/snapshots/org/mongodb/mongo-java-driver/2.12.0-SNAPSHOT/mongo-java-driver-2.12.0-20140213.053134-54.jar
 ```
 
 ## Install mongo-hadoop ##
@@ -135,15 +141,15 @@ find .|grep jar
 Fix the paths in 'ch3/pig/mongo.pig' to point at your install paths and run it, to store the email sent counts to MongoDB.
 
 ```
-REGISTER </my_mongo_install_path>/mongo-2.10.1.jar
-REGISTER </my_mongo_install_path>/core/target/mongo-hadoop-core-1.1.0-SNAPSHOT.jar
-REGISTER </my_mongo_install_path>/pig/target/mongo-hadoop-pig-1.1.0-SNAPSHOT.jar
+REGISTER $HOME/mongo-java-driver*.jar
+REGISTER $HOME/core/target/mongo-hadoop-core-*.jar
+REGISTER $HOME/pig/target/mongo-hadoop-pig-*.jar
 
 set mapred.map.tasks.speculative.execution false
 set mapred.reduce.tasks.speculative.execution false
 
 sent_counts = LOAD '/tmp/sent_counts.txt' AS (from:chararray, to:chararray, total:long);
-STORE sent_counts INTO 'mongodb://localhost/agile_data.sent_counts' USING com.mongodb.hadoop.pig.MongoStorage();
+STORE sent_counts INTO 'mongodb://localhost/agile_data.sent_counts' USING com.mongodb.hadoop.pig.MongoInsertStorage('','');
 ```
 
 ## Connect to MongoDB from Python ##
